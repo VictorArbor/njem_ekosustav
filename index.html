@@ -46,29 +46,23 @@
 </div>
 
 <div class="card-form">
-    <div class="subtitle">📤 e-Spis Ured • Podnošenje akta s mobitela</div>
-    <h1>Uloži novi podnesak (PDF)</h1>
-    <p style="font-size: 13px; color: #666;">Odaberite PDF dokument iz memorije mobitela. Sustav automatski zaprima podnesak u ured Zajednice RUKE.</p>
-    <form action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="access_key" value="a8c8872b-8a1a-4537-8095-2c262c5b736b">
-        <input type="hidden" name="subject" value="[Novi Podnesak e-Spis] Zajednica RUKE">
+    <div class="subtitle">📤 e-Spis Ured • Priprema Podneska za Slanje</div>
+    <h1>Podnesi novi akt</h1>
+    <p style="font-size: 13px; color: #666;">Ispunite podatke i kliknite gumb. Sustav otvara Vaš e-mail klijent za slanje na službenu adresu <b>zajednicaruke@gmail.com</b> uz mogućnost dodavanja PDF privitka.</p>
+    <form onsubmit="posaljiMail(event)">
         <div style="margin-bottom: 12px;">
             <label class="label">Broj akta / Oznaka</label>
-            <input type="text" name="broj_akta" required placeholder="npr. MG/PRIGOVOR-2026" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+            <input type="text" id="formBroj" required placeholder="npr. MG/PRIGOVOR-2026" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
         </div>
         <div style="margin-bottom: 12px;">
             <label class="label">Pošiljatelj (Ime i prezime)</label>
-            <input type="text" name="posiljatelj" required value="Michael Golubičić" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+            <input type="text" id="formPosiljatelj" required value="Michael Golubičić" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
         </div>
         <div style="margin-bottom: 12px;">
             <label class="label">Primatelj (Institucija / Sud)</label>
-            <input type="text" name="primatelj" required placeholder="npr. Općinski sud u Vinkovcima" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+            <input type="text" id="formPrimatelj" required placeholder="npr. Općinski sud u Vinkovcima" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
         </div>
-        <div style="margin-bottom: 15px;">
-            <label class="label">Odaberi PDF dokument</label>
-            <input type="file" name="attachment" accept=".pdf" required style="width: 100%; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; box-sizing: border-box;">
-        </div>
-        <button type="submit" style="display: block; width: 100%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">🚀 Pošalji podnesak s privitkom</button>
+        <button type="submit" style="display: block; width: 100%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">📧 Otvori e-mail klijent i pošalji podnesak</button>
     </form>
 </div>
 
@@ -118,7 +112,23 @@
             content.innerHTML = `<div class="badge" style="background:#ffebee; color:#c62828;">❌ NEVAŽEĆI AKT</div><p>Dokument ne postoji u bazi.</p>`;
         }
     } else {
-        content.innerHTML = `<p style="color:#666;">Džepni C23 e-Spis je spreman. Pretražujte akte u pretincu ispod ili unesite novi podnesak.</p>`;
+        content.innerHTML = `<p style="color:#666;">Džepni C23 e-Spis je spreman. Pretražujte akte u pretincu ispod ili pripremite novi podnesak.</p>`;
+    }
+
+    function posaljiMail(e) {
+        e.preventDefault();
+        const broj = document.getElementById('formBroj').value;
+        const posiljatelj = document.getElementById('formPosiljatelj').value;
+        const primatelj = document.getElementById('formPrimatelj').value;
+        const subject = encodeURIComponent("[Novi Podnesak e-Spis] " + broj);
+        const body = encodeURIComponent(
+            "SISTEMSKI PODNESAK ZA UDRUGU ZAJEDNICA RUKE\n\n" +
+            "Broj akta: " + broj + "\n" +
+            "Pošiljatelj: " + posiljatelj + "\n" +
+            "Primatelj: " + primatelj + "\n\n" +
+            "Napomena: Molimo priložite PDF dokument podneska uz ovu poruku prije slanja."
+        );
+        window.location.href = `mailto:zajednicaruke@gmail.com?subject=${subject}&body=${body}`;
     }
 
     function prikaziAkte(aktiZaPrikaz) {

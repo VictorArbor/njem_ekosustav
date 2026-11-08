@@ -22,7 +22,7 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    // HTML / CSS / JS predložak s podrškom za upload PDF datoteka
+    // HTML / CSS / JS predložak sa suverenom mailto integracijom
     fprintf(fhtml, "<!DOCTYPE html>\n");
     fprintf(fhtml, "<html lang=\"hr\">\n");
     fprintf(fhtml, "<head>\n");
@@ -71,32 +71,25 @@ int main(void) {
     fprintf(fhtml, "    <div id=\"inbox-content\">Učitavanje pretinca...</div>\n");
     fprintf(fhtml, "</div>\n\n");
 
-    // Kartica 3: Prava forma za upload PDF dokumenta (Web3Forms endpoint bez ovisnosti)
+    // Kartica 3: Suverena forma za pripremu e-maila s privitkom
     fprintf(fhtml, "<div class=\"card-form\">\n");
-    fprintf(fhtml, "    <div class=\"subtitle\">📤 e-Spis Ured • Podnošenje akta s mobitela</div>\n");
-    fprintf(fhtml, "    <h1>Uloži novi podnesak (PDF)</h1>\n");
-    fprintf(fhtml, "    <p style=\"font-size: 13px; color: #666;\">Odaberite PDF dokument iz memorije mobitela. Sustav automatski zaprima podnesak u ured Zajednice RUKE.</p>\n");
-    fprintf(fhtml, "    <form action=\"https://api.web3forms.com/submit\" method=\"POST\" enctype=\"multipart/form-data\">\n");
-    // Ovdje koristimo besplatni javni pristupni ključ za usmjeravanje na zajednicaruke@gmail.com
-    fprintf(fhtml, "        <input type=\"hidden\" name=\"access_key\" value=\"a8c8872b-8a1a-4537-8095-2c262c5b736b\">\n");
-    fprintf(fhtml, "        <input type=\"hidden\" name=\"subject\" value=\"[Novi Podnesak e-Spis] Zajednica RUKE\">\n");
+    fprintf(fhtml, "    <div class=\"subtitle\">📤 e-Spis Ured • Priprema Podneska za Slanje</div>\n");
+    fprintf(fhtml, "    <h1>Podnesi novi akt</h1>\n");
+    fprintf(fhtml, "    <p style=\"font-size: 13px; color: #666;\">Ispunite podatke i kliknite gumb. Sustav otvara Vaš e-mail klijent za slanje na službenu adresu <b>zajednicaruke@gmail.com</b> uz mogućnost dodavanja PDF privitka.</p>\n");
+    fprintf(fhtml, "    <form onsubmit=\"posaljiMail(event)\">\n");
     fprintf(fhtml, "        <div style=\"margin-bottom: 12px;\">\n");
     fprintf(fhtml, "            <label class=\"label\">Broj akta / Oznaka</label>\n");
-    fprintf(fhtml, "            <input type=\"text\" name=\"broj_akta\" required placeholder=\"npr. MG/PRIGOVOR-2026\" style=\"width: 100%%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;\">\n");
+    fprintf(fhtml, "            <input type=\"text\" id=\"formBroj\" required placeholder=\"npr. MG/PRIGOVOR-2026\" style=\"width: 100%%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;\">\n");
     fprintf(fhtml, "        </div>\n");
     fprintf(fhtml, "        <div style=\"margin-bottom: 12px;\">\n");
     fprintf(fhtml, "            <label class=\"label\">Pošiljatelj (Ime i prezime)</label>\n");
-    fprintf(fhtml, "            <input type=\"text\" name=\"posiljatelj\" required value=\"Michael Golubičić\" style=\"width: 100%%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;\">\n");
+    fprintf(fhtml, "            <input type=\"text\" id=\"formPosiljatelj\" required value=\"Michael Golubičić\" style=\"width: 100%%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;\">\n");
     fprintf(fhtml, "        </div>\n");
     fprintf(fhtml, "        <div style=\"margin-bottom: 12px;\">\n");
     fprintf(fhtml, "            <label class=\"label\">Primatelj (Institucija / Sud)</label>\n");
-    fprintf(fhtml, "            <input type=\"text\" name=\"primatelj\" required placeholder=\"npr. Općinski sud u Vinkovcima\" style=\"width: 100%%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;\">\n");
+    fprintf(fhtml, "            <input type=\"text\" id=\"formPrimatelj\" required placeholder=\"npr. Općinski sud u Vinkovcima\" style=\"width: 100%%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;\">\n");
     fprintf(fhtml, "        </div>\n");
-    fprintf(fhtml, "        <div style=\"margin-bottom: 15px;\">\n");
-    fprintf(fhtml, "            <label class=\"label\">Odaberi PDF dokument</label>\n");
-    fprintf(fhtml, "            <input type=\"file\" name=\"attachment\" accept=\".pdf\" required style=\"width: 100%%; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; box-sizing: border-box;\">\n");
-    fprintf(fhtml, "        </div>\n");
-    fprintf(fhtml, "        <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">🚀 Pošalji podnesak s privitkom</button>\n");
+    fprintf(fhtml, "        <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">📧 Otvori e-mail klijent i pošalji podnesak</button>\n");
     fprintf(fhtml, "    </form>\n");
     fprintf(fhtml, "</div>\n\n");
 
@@ -126,7 +119,23 @@ int main(void) {
     fprintf(fhtml, "            content.innerHTML = `<div class=\"badge\" style=\"background:#ffebee; color:#c62828;\">❌ NEVAŽEĆI AKT</div><p>Dokument ne postoji u bazi.</p>`;\n");
     fprintf(fhtml, "        }\n");
     fprintf(fhtml, "    } else {\n");
-    fprintf(fhtml, "        content.innerHTML = `<p style=\"color:#666;\">Džepni C23 e-Spis je spreman. Pretražujte akte u pretincu ispod ili unesite novi podnesak.</p>`;\n");
+    fprintf(fhtml, "        content.innerHTML = `<p style=\"color:#666;\">Džepni C23 e-Spis je spreman. Pretražujte akte u pretincu ispod ili pripremite novi podnesak.</p>`;\n");
+    fprintf(fhtml, "    }\n\n");
+
+    fprintf(fhtml, "    function posaljiMail(e) {\n");
+    fprintf(fhtml, "        e.preventDefault();\n");
+    fprintf(fhtml, "        const broj = document.getElementById('formBroj').value;\n");
+    fprintf(fhtml, "        const posiljatelj = document.getElementById('formPosiljatelj').value;\n");
+    fprintf(fhtml, "        const primatelj = document.getElementById('formPrimatelj').value;\n");
+    fprintf(fhtml, "        const subject = encodeURIComponent(\"[Novi Podnesak e-Spis] \" + broj);\n");
+    fprintf(fhtml, "        const body = encodeURIComponent(\n");
+    fprintf(fhtml, "            \"SISTEMSKI PODNESAK ZA UDRUGU ZAJEDNICA RUKE\\n\\n\" +\n");
+    fprintf(fhtml, "            \"Broj akta: \" + broj + \"\\n\" +\n");
+    fprintf(fhtml, "            \"Pošiljatelj: \" + posiljatelj + \"\\n\" +\n");
+    fprintf(fhtml, "            \"Primatelj: \" + primatelj + \"\\n\\n\" +\n");
+    fprintf(fhtml, "            \"Napomena: Molimo priložite PDF dokument podneska uz ovu poruku prije slanja.\"\n");
+    fprintf(fhtml, "        );\n");
+    fprintf(fhtml, "        window.location.href = `mailto:zajednicaruke@gmail.com?subject=${subject}&body=${body}`;\n");
     fprintf(fhtml, "    }\n\n");
 
     fprintf(fhtml, "    function prikaziAkte(aktiZaPrikaz) {\n");
@@ -163,6 +172,6 @@ int main(void) {
     fprintf(fhtml, "</body>\n</html>\n");
 
     fclose(fhtml);
-    printf("[C23 USPJEH] Generiran index.html s podrškom za odabir i upload PDF datoteka.\n");
+    printf("[C23 USPJEH] Generiran index.html sa suverenom Opcijom 1 (mailto veza).\n");
     return EXIT_SUCCESS;
 }
