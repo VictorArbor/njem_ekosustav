@@ -16,9 +16,9 @@ int main(void) {
     fread(json_buf, 1, sizeof(json_buf) - 1, fjson);
     fclose(fjson);
 
-    FILE *fhtml = fopen("Zajednica_RUKE_eSpis.html", "w");
+    FILE *fhtml = fopen("index.html", "w");
     if (!fhtml) {
-        perror("[C23 GREŠKA] Ne mogu stvoriti Zajednica_RUKE_eSpis.html");
+        perror("[C23 GREŠKA] Ne mogu stvoriti index.html");
         return EXIT_FAILURE;
     }
 
@@ -153,6 +153,6 @@ int main(void) {
     fprintf(fhtml, "</body>\n</html>\n");
 
     fclose(fhtml);
-    printf("[C23 USPJEH] Ažurirana offline aplikacija s trailicom i filterima: Zajednica_RUKE_eSpis.html\n");
+    printf("[C23 USPJEH] Ažurirana offline aplikacija s trailicom i filterima: index.html\n");
     return EXIT_SUCCESS;
 }
