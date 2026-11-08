@@ -145,8 +145,8 @@ int main(void) {
     fprintf(fhtml, "    };\n\n");
 
     // UNESITE VAŠ TELEGRAM BOT TOKEN I CHAT ID OVDJE DA VAM STIŽE PUSH DIREKTNO NA MOBITEL
-    fprintf(fhtml, "    const TG_BOT_TOKEN = ''; // Upišite npr: '7891234567:AAHxxx...'\n");
-    fprintf(fhtml, "    const TG_CHAT_ID = '';   // Upišite npr: '123456789'\n\n");
+    fprintf(fhtml, "    const TG_BOT_TOKEN = '2209975:AAHxxxxxxx'; // Upišite npr: '7891234567:AAHxxx...'\n");
+    fprintf(fhtml, "    const TG_CHAT_ID = '2209975';   // Upišite npr: '123456789'\n\n");
 
     fprintf(fhtml, "    let trenutniKorisnik = JSON.parse(sessionStorage.getItem('ruke_active_user') || 'null');\n");
     fprintf(fhtml, "    let localActs = JSON.parse(localStorage.getItem('ruke_akti') || '[]');\n");
