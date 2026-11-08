@@ -6,15 +6,15 @@
   },
   "akti": [
     {
-      "broj_akta": "MG/KANGOO-ZAVRCNI-2026",
-      "kontrolni_broj": "589F-1771",
-      "sha256": "589f17718f9849ecc358e21dd50b38dc13e9b906c8ea4a5a65237caa17e8c2ce",
-      "timestamp": "2026-11-08T07:39:38Z",
+      "broj_akta": "MG/POZIV-HELENA-2026",
+      "kontrolni_broj": "BFE9-80BA",
+      "sha256": "bfe980baa0898bdce2d39dc3863eabb68a582c06c2f562437bf1dad585a313de",
+      "timestamp": "2026-11-08T08:49:32Z",
       "status": "ZAPRIMLJENO",
-      "posiljatelj": "Michael Golubičić (Zajednica RUKE)",
-      "primatelj": "Općinski sud u Vinkovcima",
-      "pdf_url": "pdf/Punomoć registracija Kangoo.pdf",
-      "potvrda_url": "pdf/potvrda_589F-1771.txt"
+      "posiljatelj": "Victor Arbor",
+      "primatelj": "Općinski sud Vinkovci",
+      "pdf_url": "pdf/Poziv_Helena_Zetic_9-3087a-c516f.pdf",
+      "potvrda_url": "pdf/potvrda_BFE9-80BA.txt"
     }
   ]
 }

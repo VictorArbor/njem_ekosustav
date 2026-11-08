@@ -1,0 +1,12 @@
+=================================================================
+  ZAJEDNICA RUKE — POTVRDA O ZAPRIMANJU PODNESKA (e-Potvrda)
+=================================================================
+Broj akta / Zapisa:  MG/POZIV-HELENA-2026
+Kontrolni broj:      BFE9-80BA
+Vremenska oznaka:    2026-11-08T08:49:32Z (UTC)
+SHA-256 Podneska:    bfe980baa0898bdce2d39dc3863eabb68a582c06c2f562437bf1dad585a313de
+Pošiljatelj:         Victor Arbor
+Primatelj:           Općinski sud Vinkovci
+Izdavatelj potvrde:  Udruga ZAJEDNICA RUKE (OIB: 64517735227)
+Verifikacijski URL:  https://victorarbor.github.io/njem_ekosustav/index.html?broj=MG/POZIV-HELENA-2026&kod=BFE9-80BA
+=================================================================
