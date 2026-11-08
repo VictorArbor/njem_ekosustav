@@ -86,7 +86,6 @@ int main(void) {
     // Sekcija nakon uspješne prijave (Privatni Pretinac + Forma)
     fprintf(fhtml, "<div id=\"privateSection\" style=\"display: none;\">\n");
 
-    // Korisnička traka
     fprintf(fhtml, "    <div class=\"card-inbox\" style=\"margin-bottom: 0px;\">\n");
     fprintf(fhtml, "        <div class=\"user-bar\">\n");
     fprintf(fhtml, "            <div>👤 Prijavljeni korisnik: <b id=\"userNameDisplay\">-</b> (<span id=\"userRoleDisplay\">-</span>)</div>\n");
@@ -113,7 +112,7 @@ int main(void) {
     PRINT_LOGO
     fprintf(fhtml, "        <div class=\"subtitle\">Klijentska Kriptografska Obrada i Automatski Prijem</div>\n");
     fprintf(fhtml, "        <h1>Uloži novi podnesak s lokalnim SHA-256 pečatom</h1>\n");
-    fprintf(fhtml, "        <p style=\"font-size: 13px; color: #666;\">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak, automatski generira i preuzima <b>Potvrdu o zaprimanju Podneska</b> te obavještava ured na <b>zajednicaruke@gmail.com</b>.</p>\n");
+    fprintf(fhtml, "        <p style=\"font-size: 13px; color: #666;\">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak, automatski generira i preuzima <b>Potvrdu o zaprimanju Podneska</b> te otvara e-mail obavijest za <b>zajednicaruke@gmail.com</b>.</p>\n");
     fprintf(fhtml, "        <form onsubmit=\"obradiPodnesak(event)\">\n");
     fprintf(fhtml, "            <div style=\"margin-bottom: 12px;\">\n");
     fprintf(fhtml, "                <label class=\"label\">Broj akta / Oznaka</label>\n");
@@ -131,7 +130,7 @@ int main(void) {
     fprintf(fhtml, "                <label class=\"label\">Odaberi PDF dokument</label>\n");
     fprintf(fhtml, "                <input type=\"file\" id=\"pfile\" accept=\".pdf\" required style=\"width: 100%%; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; box-sizing: border-box;\">\n");
     fprintf(fhtml, "            </div>\n");
-    fprintf(fhtml, "            <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">⚡ Izradi SHA-256 Pečat i Generiraj Potvrdu o zaprimanju</button>\n");
+    fprintf(fhtml, "            <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">⚡ Izradi SHA-256 Pečat, Potvrdu i Pošalji Obavijest</button>\n");
     fprintf(fhtml, "        </form>\n");
     fprintf(fhtml, "        <div id=\"resultArea\" style=\"margin-top: 20px;\"></div>\n");
     fprintf(fhtml, "    </div>\n");
@@ -141,7 +140,6 @@ int main(void) {
     fprintf(fhtml, "<script>\n");
     fprintf(fhtml, "    const serverData = %s;\n\n", json_buf);
 
-    // Baza osobnih PIN-ova članova
     fprintf(fhtml, "    const clanoviBaza = {\n");
     fprintf(fhtml, "        '3PutSvet!': { ime: 'Michael Golubičić', oib: '64517735227', uloga: 'Ovlašteni zastupnik' },\n");
     fprintf(fhtml, "        'RUKE2026': { ime: 'Član Zajednice RUKE', oib: '64517735227', uloga: 'Član' }\n");
@@ -184,7 +182,6 @@ int main(void) {
     fprintf(fhtml, "        initsijalizirajKorisnika();\n");
     fprintf(fhtml, "    }\n\n");
 
-    // Filtriranje tako da pretinac prikazuje samo akte trenutno prijavljenog člana
     fprintf(fhtml, "    function dohvatiOsobneAkte() {\n");
     fprintf(fhtml, "        if (!trenutniKorisnik) return [];\n");
     fprintf(fhtml, "        return allActs.filter(a => \n");
@@ -207,7 +204,7 @@ int main(void) {
     fprintf(fhtml, "        if (fileInput.files.length === 0) { alert('Molimo odaberite PDF dokument.'); return; }\n");
     fprintf(fhtml, "        const file = fileInput.files[0];\n\n");
 
-    fprintf(fhtml, "        resultArea.innerHTML = '<p style=\"color: #0056b3; font-weight: bold;\">⏳ Izračun SHA-256 kriptografskog sažetka i izrada Potvrde o zaprimanju Podneska...</p>';\n\n");
+    fprintf(fhtml, "        resultArea.innerHTML = '<p style=\"color: #0056b3; font-weight: bold;\">⏳ Izračun SHA-256 kriptografskog sažetka...</p>';\n\n");
 
     fprintf(fhtml, "        try {\n");
     fprintf(fhtml, "            const buffer = await file.arrayBuffer();\n");
@@ -234,12 +231,17 @@ int main(void) {
     fprintf(fhtml, "            allActs = [...serverData.akti, ...localActs];\n");
     fprintf(fhtml, "            prikaziAkte(dohvatiOsobneAkte());\n\n");
 
-    // Generiranje službenog teksta Potvrde o zaprimanju Podneska
+    // Potvrda tekst
     fprintf(fhtml, "            const potvrdaTekst = `SLUŽBENA POTVRDA O ZAPRIMANJU PODNESKA\\nZajednica RUKE (OIB: 64517735227)\\n-----------------------------------------------------\\nBroj akta / Podneska: ${broj}\\nKontrolni kod verifikacije: ${kontrolni_broj}\\nSHA-256 Kriptografski sažetak: ${sha256}\\nPošiljatelj: ${posiljatelj}\\nPrimatelj: ${primatelj}\\nDatum i vrijeme zaprimanja: ${timestamp} (UTC)\\nStatus obrade: ZAPRIMLJENO UNUTAR OSOBNOG e-SPISA\\n-----------------------------------------------------\\nKriptografski pečatirano • eIDAS standard compliant`;\n");
     fprintf(fhtml, "            const blob = new Blob([potvrdaTekst], {type: 'text/plain;charset=utf-8'});\n");
     fprintf(fhtml, "            const potvrdaUrl = URL.createObjectURL(blob);\n\n");
 
-    // Automatsko pokretanje preuzimanja Potvrde na uređaj
+    // E-mail veza
+    fprintf(fhtml, "            const mailSubject = encodeURIComponent('[Potvrda zaprimanja e-Spis] Akt: ' + broj);\n");
+    fprintf(fhtml, "            const mailBody = encodeURIComponent('SISTEMSKA POTVRDA O ZAPRIMANJU PODNESKA\\n\\nBroj akta: ' + broj + '\\nKontrolni kod: ' + kontrolni_broj + '\\nSHA-256: ' + sha256 + '\\nPošiljatelj: ' + posiljatelj + '\\nPrimatelj: ' + primatelj + '\\nDatum/Vrijeme: ' + timestamp + ' (UTC)\\nStatus: ZAPRIMLJENO\\n\\nPotvrda o zaprimanju je automatski generirana.');\n");
+    fprintf(fhtml, "            const mailtoUrl = `mailto:zajednicaruke@gmail.com?subject=${mailSubject}&body=${mailBody}`;\n\n");
+
+    // 1. Događaj: Automatsko preuzimanje Potvrde (.txt)
     fprintf(fhtml, "            const autoDownloadLink = document.createElement('a');\n");
     fprintf(fhtml, "            autoDownloadLink.href = potvrdaUrl;\n");
     fprintf(fhtml, "            autoDownloadLink.download = `Potvrda_zaprimanja_${broj.replace(/[^a-zA-Z0-9_-]/g, '_')}_${kontrolni_broj}.txt`;\n");
@@ -247,18 +249,18 @@ int main(void) {
     fprintf(fhtml, "            autoDownloadLink.click();\n");
     fprintf(fhtml, "            document.body.removeChild(autoDownloadLink);\n\n");
 
-    // Priprema obavijesti za mail
-    fprintf(fhtml, "            const mailSubject = encodeURIComponent('[Potvrda zaprimanja e-Spis] Akt: ' + broj);\n");
-    fprintf(fhtml, "            const mailBody = encodeURIComponent('SISTEMSKA POTVRDA O ZAPRIMANJU PODNESKA\\n\\nBroj akta: ' + broj + '\\nKontrolni kod: ' + kontrolni_broj + '\\nSHA-256: ' + sha256 + '\\nPošiljatelj: ' + posiljatelj + '\\nPrimatelj: ' + primatelj + '\\nDatum/Vrijeme: ' + timestamp + ' (UTC)\\nStatus: ZAPRIMLJENO\\n\\nPotvrda o zaprimanju je automatski generirana i spremljena.');\n");
-    fprintf(fhtml, "            const mailtoUrl = `mailto:zajednicaruke@gmail.com?subject=${mailSubject}&body=${mailBody}`;\n\n");
+    // 2. Događaj: Pokretanje e-mail klijenta s odmakom od 400ms da preglednik osigura oba procesa
+    fprintf(fhtml, "            setTimeout(() => {\n");
+    fprintf(fhtml, "                window.location.href = mailtoUrl;\n");
+    fprintf(fhtml, "            }, 400);\n\n");
 
     fprintf(fhtml, "            resultArea.innerHTML = `\n");
     fprintf(fhtml, "                <div class=\"badge\">✓ USPJEŠNO ZAPRIMLJENO I PEČATIRANO</div>\n");
-    fprintf(fhtml, "                <p style=\"font-size:13px; color:#28a745; font-weight:bold;\">📥 Potvrda o zaprimanju Podneska je automatski preuzeta na Vaš uređaj!</p>\n");
+    fprintf(fhtml, "                <p style=\"font-size:13px; color:#28a745; font-weight:bold;\">📥 Potvrda je automatski preuzeta i mail klijent je automatski pokrenut!</p>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">Kontrolni broj</div><div class=\"value\">${kontrolni_broj}</div></div>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">SHA-256 Otisak</div><div class=\"value\">${sha256}</div></div>\n");
     fprintf(fhtml, "                <a href=\"${potvrdaUrl}\" download=\"Potvrda_zaprimanja_${kontrolni_broj}.txt\" class=\"btn btn-potvrda\" style=\"display:block; text-align:center;\">📜 Ponovno preuzmi Potvrdu o zaprimanju (.txt)</a>\n");
-    fprintf(fhtml, "                <a href=\"${mailtoUrl}\" class=\"btn btn-mail\" style=\"display:block; text-align:center;\">📧 Pošalji obavijest u ured na zajednicaruke@gmail.com</a>\n");
+    fprintf(fhtml, "                <a href=\"${mailtoUrl}\" class=\"btn btn-mail\" style=\"display:block; text-align:center;\">📧 Otvori mail obavijest ponovno</a>\n");
     fprintf(fhtml, "            `;\n\n");
 
     fprintf(fhtml, "        } catch(err) {\n");
@@ -266,7 +268,6 @@ int main(void) {
     fprintf(fhtml, "        }\n");
     fprintf(fhtml, "    }\n\n");
 
-    // URL Provjera pojedinačnog akta
     fprintf(fhtml, "    const params = new URLSearchParams(window.location.search);\n");
     fprintf(fhtml, "    const trazeniBroj = params.get('broj');\n");
     fprintf(fhtml, "    const trazeniKod = params.get('kod');\n");
@@ -280,7 +281,7 @@ int main(void) {
     fprintf(fhtml, "                <div class=\"badge\">✓ VERIFICIRAN IZVORNIK (OFFLINE)</div>\n");
     fprintf(fhtml, "                <h1>Broj akta: ${akt.broj_akta}</h1>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">Kontrolni broj</div><div class=\"value\">${akt.kontrolni_broj}</div></div>\n");
-    fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">SHA-256 Otisak</div><div class=\"value\">${akt.sha256}</div></div>\n");
+    fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">SHA-256 Otisak</div><div class=\"value\">${sha256}</div></div>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">Pošiljatelj ➔ Primatelj</div><div class=\"value\">${akt.posiljatelj} ➔ ${akt.primatelj}</div></div>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">Vremenska oznaka</div><div class=\"value\">${akt.timestamp}</div></div>\n");
     fprintf(fhtml, "            `;\n");
@@ -320,7 +321,6 @@ int main(void) {
     fprintf(fhtml, "        prikaziAkte(filtrirani);\n");
     fprintf(fhtml, "    }\n\n");
 
-    fprintf(fhtml, "    // Inicijalizacija pri punjenju stranice\n");
     fprintf(fhtml, "    initsijalizirajKorisnika();\n");
     fprintf(fhtml, "</script>\n\n");
 
@@ -328,6 +328,6 @@ int main(void) {
     fprintf(fhtml, "</body>\n</html>\n");
 
     fclose(fhtml);
-    printf("[C23 USPJEH] Generiran index.html s osobnim PIN-om (3PutSvet!), privatnim pretincem i automatskim preuzimanjem Potvrde o zaprimanju.\n");
+    printf("[C23 USPJEH] Regeneriran index.html s udvostručenim automatskim okidačem (preuzimanje + mail obavijest).\n");
     return EXIT_SUCCESS;
 }
