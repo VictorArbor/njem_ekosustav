@@ -27,7 +27,7 @@ int main(void) {
     fprintf(fhtml, "<head>\n");
     fprintf(fhtml, "    <meta charset=\"UTF-8\">\n");
     fprintf(fhtml, "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
-    fprintf(fhtml, "    <title>Zajednica RUKE • e-Spis Pretinac i Prijem</title>\n");
+    fprintf(fhtml, "    <title>Zajednica RUKE • Osobni e-Spis Pretinac</title>\n");
     fprintf(fhtml, "    <style>\n");
     fprintf(fhtml, "        body { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif; background: #eef2f5; color: #333; margin: 0; padding: 20px; }\n");
     fprintf(fhtml, "        .card { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #28a745; }\n");
@@ -36,7 +36,7 @@ int main(void) {
     fprintf(fhtml, "        .card-auth { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #e67e22; }\n");
     fprintf(fhtml, "        .card-error { border-top-color: #dc3545; }\n");
     fprintf(fhtml, "        .logo-header { text-align: center; margin-bottom: 20px; }\n");
-    fprintf(fhtml, "        .logo-header img { width: 85px; height: 85px; border-radius: 50%%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: cover; }\n");
+    fprintf(fhtml, "        .logo-header img { width: 90px; height: 90px; border-radius: 50%%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: cover; display: block; margin: 0 auto; }\n");
     fprintf(fhtml, "        h1 { font-size: 20px; color: #1a252f; margin-bottom: 5px; }\n");
     fprintf(fhtml, "        .subtitle { font-size: 12px; color: #6c757d; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; text-align: center; }\n");
     fprintf(fhtml, "        .badge { display: inline-block; padding: 6px 12px; background: #e8f5e9; color: #2e7d32; font-weight: bold; border-radius: 20px; font-size: 13px; margin-bottom: 15px; }\n");
@@ -47,6 +47,7 @@ int main(void) {
     fprintf(fhtml, "        .controls input, .controls select { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; box-sizing: border-box; }\n");
     fprintf(fhtml, "        .btn { display: inline-block; width: 48%%; text-align: center; background: #0056b3; color: white; padding: 12px 0; text-decoration: none; font-weight: bold; border-radius: 8px; margin-top: 15px; font-size: 13px; box-sizing: border-box; }\n");
     fprintf(fhtml, "        .btn-potvrda { background: #28a745; margin-left: 3%%; }\n");
+    fprintf(fhtml, "        .btn-mail { background: #6f42c1; width: 100%%; margin-top: 10px; }\n");
     fprintf(fhtml, "        table { width: 100%%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }\n");
     fprintf(fhtml, "        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }\n");
     fprintf(fhtml, "        th { background: #f8f9fa; color: #555; }\n");
@@ -54,12 +55,10 @@ int main(void) {
     fprintf(fhtml, "    </style>\n");
     fprintf(fhtml, "</head>\n<body>\n\n");
 
-    // Zajednički zaglavlje s logom za svaku sekciju
-    // Macro za logo header
     #define PRINT_LOGO \
         fprintf(fhtml, "    <div class=\"logo-header\">\n"); \
         fprintf(fhtml, "        <img src=\"logo.png\" alt=\"Zajednica RUKE Grb\">\n"); \
-        fprintf(fhtml, "        <div style=\"font-size: 14px; font-weight: bold; color: #2c3e50; margin-top: 8px;\">Udruga Zajednica RUKE</div>\n"); \
+        fprintf(fhtml, "        <div style=\"font-size: 16px; font-weight: bold; color: #2c3e50; margin-top: 8px;\">Zajednica RUKE</div>\n"); \
         fprintf(fhtml, "        <div style=\"font-size: 11px; color: #7f8c8d;\">OIB: 64517735227 • Zagreb</div>\n"); \
         fprintf(fhtml, "    </div>\n");
 
@@ -84,7 +83,7 @@ int main(void) {
     fprintf(fhtml, "    <div id=\"inbox-content\">Učitavanje pretinca...</div>\n");
     fprintf(fhtml, "</div>\n\n");
 
-    // Kartica 3: Članska Prijava (Login Gate)
+    // Kartica 3: Članska Prijava
     fprintf(fhtml, "<div id=\"authCard\" class=\"card-auth\">\n");
     PRINT_LOGO
     fprintf(fhtml, "    <div class=\"subtitle\">Članska Autentikacija</div>\n");
@@ -102,7 +101,7 @@ int main(void) {
     PRINT_LOGO
     fprintf(fhtml, "    <div class=\"subtitle\">Klijentska Kriptografska Obrada i Prijem</div>\n");
     fprintf(fhtml, "    <h1>Uloži novi podnesak s lokalnim SHA-256 pečatom</h1>\n");
-    fprintf(fhtml, "    <p style=\"font-size: 13px; color: #666;\">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak u pregledniku, generira kontrolni kod i izdaje službenu e-Potvrdu.</p>\n");
+    fprintf(fhtml, "    <p style=\"font-size: 13px; color: #666;\">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak u pregledniku, generira kontrolni kod, izdaje službenu e-Potvrdu i priprema obavijest za zajednicaruke@gmail.com.</p>\n");
     fprintf(fhtml, "    <form onsubmit=\"obradiPodnesak(event)\">\n");
     fprintf(fhtml, "        <div style=\"margin-bottom: 12px;\">\n");
     fprintf(fhtml, "            <label class=\"label\">Broj akta / Oznaka</label>\n");
@@ -120,7 +119,7 @@ int main(void) {
     fprintf(fhtml, "            <label class=\"label\">Odaberi PDF dokument</label>\n");
     fprintf(fhtml, "            <input type=\"file\" id=\"pfile\" accept=\".pdf\" required style=\"width: 100%%; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; box-sizing: border-box;\">\n");
     fprintf(fhtml, "        </div>\n");
-    fprintf(fhtml, "        <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">⚡ Generiraj SHA-256 Pečat i e-Potvrdu</button>\n");
+    fprintf(fhtml, "        <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">⚡ Generiraj SHA-256 Pečat, e-Potvrdu i Pošalji Obavijest</button>\n");
     fprintf(fhtml, "    </form>\n");
     fprintf(fhtml, "    <div id=\"resultArea\" style=\"margin-top: 20px;\"></div>\n");
     fprintf(fhtml, "</div>\n\n");
@@ -180,16 +179,26 @@ int main(void) {
     fprintf(fhtml, "            allActs = [...serverData.akti, ...localActs];\n");
     fprintf(fhtml, "            prikaziAkte(allActs);\n\n");
 
-    fprintf(fhtml, "            const potvrdaTekst = `SLUŽBENA e-POTVRDA O ZAPRIMANJU PODNESKA\\nUdruga Zajednica RUKE (OIB: 64517735227)\\n-----------------------------------------------------\\nBroj akta: ${broj}\\nKontrolni kod: ${kontrolni_broj}\\nSHA-256 Otisak: ${sha256}\\nPošiljatelj: ${posiljatelj}\\nPrimatelj: ${primatelj}\\nDatum/Vrijeme: ${timestamp} (UTC)\\nStatus: ZAPRIMLJENO\\n-----------------------------------------------------\\neIDAS Compliant • Kriptografski ovjereno`;\n");
+    fprintf(fhtml, "            const potvrdaTekst = `SLUŽBENA e-POTVRDA O ZAPRIMANJU PODNESKA\\nZajednica RUKE (OIB: 64517735227)\\n-----------------------------------------------------\\nBroj akta: ${broj}\\nKontrolni kod: ${kontrolni_broj}\\nSHA-256 Otisak: ${sha256}\\nPošiljatelj: ${posiljatelj}\\nPrimatelj: ${primatelj}\\nDatum/Vrijeme: ${timestamp} (UTC)\\nStatus: ZAPRIMLJENO\\n-----------------------------------------------------\\neIDAS Compliant • Kriptografski ovjereno`;\n");
     fprintf(fhtml, "            const blob = new Blob([potvrdaTekst], {type: 'text/plain'});\n");
     fprintf(fhtml, "            const potvrdaUrl = URL.createObjectURL(blob);\n\n");
+
+    // Automatsko pripremanje i okidanje e-mail obavijesti na zajednicaruke@gmail.com
+    fprintf(fhtml, "            const mailSubject = encodeURIComponent('[e-Spis Obavijest] Zaprimljen akt: ' + broj);\n");
+    fprintf(fhtml, "            const mailBody = encodeURIComponent('SISTEMSKA OBAVIJEST O ZAPRIMANJU PODNESKA\\n\\nBroj akta: ' + broj + '\\nKontrolni kod: ' + kontrolni_broj + '\\nSHA-256: ' + sha256 + '\\nPošiljatelj: ' + posiljatelj + '\\nPrimatelj: ' + primatelj + '\\nDatum/Vrijeme: ' + timestamp + ' (UTC)\\nStatus: ZAPRIMLJENO\\n\\nNapomena: Podnesak je kriptografski ovjeren i zaprimljen u Osobni e-Spis pretinac.');\n");
+    fprintf(fhtml, "            const mailtoUrl = `mailto:zajednicaruke@gmail.com?subject=${mailSubject}&body=${mailBody}`;\n\n");
 
     fprintf(fhtml, "            resultArea.innerHTML = `\n");
     fprintf(fhtml, "                <div class=\"badge\">✓ USPJEŠNO ZAPRIMLJENO I PEČATIRANO</div>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">Kontrolni broj</div><div class=\"value\">${kontrolni_broj}</div></div>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">SHA-256 Otisak</div><div class=\"value\">${sha256}</div></div>\n");
     fprintf(fhtml, "                <a href=\"${potvrdaUrl}\" download=\"potvrda_${kontrolni_broj}.txt\" class=\"btn btn-potvrda\" style=\"display:block; width:100%%; text-align:center;\">📜 Preuzmi Službenu e-Potvrdu (.txt)</a>\n");
-    fprintf(fhtml, "            `;\n");
+    fprintf(fhtml, "                <a href=\"${mailtoUrl}\" class=\"btn btn-mail\" style=\"display:block; width:100%%; text-align:center;\">📧 Pošalji Obavijest na zajednicaruke@gmail.com</a>\n");
+    fprintf(fhtml, "            `;\n\n");
+
+    // Automatsko otvaranje mail klijenta
+    fprintf(fhtml, "            setTimeout(() => { window.location.href = mailtoUrl; }, 600);\n");
+
     fprintf(fhtml, "        } catch(err) {\n");
     fprintf(fhtml, "            resultArea.innerHTML = '<p style=\"color:red;\">Greška pri obradi PDF-a: ' + err.message + '</p>';\n");
     fprintf(fhtml, "        }\n");
@@ -217,7 +226,7 @@ int main(void) {
     fprintf(fhtml, "            content.innerHTML = `<div class=\"badge\" style=\"background:#ffebee; color:#c62828;\">❌ NEVAŽEĆI AKT</div><p>Dokument ne postoji u bazi.</p>`;\n");
     fprintf(fhtml, "        }\n");
     fprintf(fhtml, "    } else {\n");
-    fprintf(fhtml, "        content.innerHTML = `<p style=\"color:#666;\">Džepni e-Spis je spreman. Prijavite se ispod za unos novog akta ili pretražite postojeći pretinac.</p>`;\n");
+    fprintf(fhtml, "        content.innerHTML = `<p style=\"color:#666;\">Osobni e-Spis je spreman. Prijavite se ispod za unos novog akta ili pretražite postojeći pretinac.</p>`;\n");
     fprintf(fhtml, "    }\n\n");
 
     fprintf(fhtml, "    function prikaziAkte(aktiZaPrikaz) {\n");
@@ -254,6 +263,6 @@ int main(void) {
     fprintf(fhtml, "</body>\n</html>\n");
 
     fclose(fhtml);
-    printf("[C23 USPJEH] Generiran index.html s ugrađenim službenim grbom Zajednice RUKE.\n");
+    printf("[C23 USPJEH] Regeneriran index.html s automatskim generiranjem e-mail obavijesti na zajednicaruke@gmail.com\n");
     return EXIT_SUCCESS;
 }
