@@ -46,6 +46,9 @@ int main(void) {
     fprintf(fhtml, "<!DOCTYPE html>\n");
     fprintf(fhtml, "<html lang=\"hr\">\n");
     fprintf(fhtml, "<head>\n");
+    fprintf(fhtml, "    <!-- pdf-lib i qrious -->\n");
+    fprintf(fhtml, "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js\"></script>\n");
+    fprintf(fhtml, "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js\"></script>\n");
     fprintf(fhtml, "    <meta charset=\"UTF-8\">\n");
     fprintf(fhtml, "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
     fprintf(fhtml, "    <title>Zajednica RUKE • Osobni e-Spis Pretinac</title>\n");
