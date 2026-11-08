@@ -25,6 +25,34 @@ void ispisi_grb_bst(FILE *fhtml) {
 }
 /* ==== Kraj: vizualni identiteti ==== */
 
+/* ==== Tri odvojena vizualna identiteta Zajednice RUKE ==== */
+/* 1. Službeni grb (Verifikator) */
+void ispisi_grb_zajednica(FILE *fhtml) {
+    fprintf(fhtml, "    <div class=\"logo-header\">\n");
+    fprintf(fhtml, "        <img src=\"logo.png\" alt=\"Zajednica RUKE Grb\">\n");
+    fprintf(fhtml, "        <div style=\"font-size: 16px; font-weight: bold; color: #2c3e50; margin-top: 8px;\">Zajednica RUKE</div>\n");
+    fprintf(fhtml, "        <div style=\"font-size: 11px; color: #7f8c8d;\">OIB: 64517735227 • Zagreb</div>\n");
+    fprintf(fhtml, "    </div>\n");
+}
+
+/* 2. Svečani Orden (Članska Prijava / PIN) */
+void ispisi_grb_orden(FILE *fhtml) {
+    fprintf(fhtml, "    <div class=\"logo-header\">\n");
+    fprintf(fhtml, "        <img src=\"logo_orden.jpg\" alt=\"Svečani Orden Zajednice RUKE\">\n");
+    fprintf(fhtml, "        <div style=\"font-size: 16px; font-weight: bold; color: #2c3e50; margin-top: 8px;\">Zajednica RUKE</div>\n");
+    fprintf(fhtml, "        <div style=\"font-size: 11px; color: #7f8c8d;\">OIB: 64517735227 • Zagreb</div>\n");
+    fprintf(fhtml, "    </div>\n");
+}
+
+/* 3. BST Pečat Tetramorfa (Pretinac & Forma) */
+void ispisi_grb_bst(FILE *fhtml) {
+    fprintf(fhtml, "    <div class=\"logo-header\">\n");
+    fprintf(fhtml, "        <img src=\"logo_bst.jpg\" alt=\"BST Hipostazološki Pečat\" style=\"width: 90px; height: 90px; border-radius: 50%%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: cover; display: block; margin: 0 auto; border: 3px solid #f39c12;\">\n");
+    fprintf(fhtml, "        <div style=\"font-size: 16px; font-weight: bold; color: #2c3e50; margin-top: 8px;\">ANUH • Hipostazologija &amp; Zadružno Poduzetništvo</div>\n");
+    fprintf(fhtml, "        <div style=\"font-size: 11px; color: #7f8c8d;\">Fraktalni Meta-Ontološki Sustav • Županja</div>\n");
+    fprintf(fhtml, "    </div>\n");
+}
+
 int main(void) {
     FILE *fjson = fopen("registar_akata.json", "r");
     if (!fjson) {
