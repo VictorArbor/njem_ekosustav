@@ -22,7 +22,7 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    // HTML / CSS / JS predložak sa suverenom mailto integracijom
+    // HTML / CSS / JS predložak s lokalnim odabirom datoteka i mailto integracijom
     fprintf(fhtml, "<!DOCTYPE html>\n");
     fprintf(fhtml, "<html lang=\"hr\">\n");
     fprintf(fhtml, "<head>\n");
@@ -39,7 +39,7 @@ int main(void) {
     fprintf(fhtml, "        .subtitle { font-size: 12px; color: #6c757d; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }\n");
     fprintf(fhtml, "        .badge { display: inline-block; padding: 6px 12px; background: #e8f5e9; color: #2e7d32; font-weight: bold; border-radius: 20px; font-size: 13px; margin-bottom: 15px; }\n");
     fprintf(fhtml, "        .info-group { margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px; }\n");
-    fprintf(fhtml, "        .label { font-size: 11px; color: #888; text-transform: uppercase; }\n");
+    fprintf(fhtml, "        .label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; }\n");
     fprintf(fhtml, "        .value { font-size: 13px; font-weight: 600; color: #2c3e50; word-break: break-all; }\n");
     fprintf(fhtml, "        .controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }\n");
     fprintf(fhtml, "        .controls input, .controls select { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; box-sizing: border-box; }\n");
@@ -71,12 +71,12 @@ int main(void) {
     fprintf(fhtml, "    <div id=\"inbox-content\">Učitavanje pretinca...</div>\n");
     fprintf(fhtml, "</div>\n\n");
 
-    // Kartica 3: Suverena forma za pripremu e-maila s privitkom
+    // Kartica 3: Forma s odabirom PDF datoteke
     fprintf(fhtml, "<div class=\"card-form\">\n");
-    fprintf(fhtml, "    <div class=\"subtitle\">📤 e-Spis Ured • Priprema Podneska za Slanje</div>\n");
-    fprintf(fhtml, "    <h1>Podnesi novi akt</h1>\n");
-    fprintf(fhtml, "    <p style=\"font-size: 13px; color: #666;\">Ispunite podatke i kliknite gumb. Sustav otvara Vaš e-mail klijent za slanje na službenu adresu <b>zajednicaruke@gmail.com</b> uz mogućnost dodavanja PDF privitka.</p>\n");
-    fprintf(fhtml, "    <form onsubmit=\"posaljiMail(event)\">\n");
+    fprintf(fhtml, "    <div class=\"subtitle\">📤 e-Spis Ured • Prijem Podnesaka sa PDF Privitkom</div>\n");
+    fprintf(fhtml, "    <h1>Uloži novi podnesak</h1>\n");
+    fprintf(fhtml, "    <p style=\"font-size: 13px; color: #666;\">Ispunite podatke, odaberite PDF dokument sa svog uređaja i pošaljite ga u ured na <b>zajednicaruke@gmail.com</b>.</p>\n");
+    fprintf(fhtml, "    <form onsubmit=\"posaljiPodnesak(event)\">\n");
     fprintf(fhtml, "        <div style=\"margin-bottom: 12px;\">\n");
     fprintf(fhtml, "            <label class=\"label\">Broj akta / Oznaka</label>\n");
     fprintf(fhtml, "            <input type=\"text\" id=\"formBroj\" required placeholder=\"npr. MG/PRIGOVOR-2026\" style=\"width: 100%%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;\">\n");
@@ -89,7 +89,15 @@ int main(void) {
     fprintf(fhtml, "            <label class=\"label\">Primatelj (Institucija / Sud)</label>\n");
     fprintf(fhtml, "            <input type=\"text\" id=\"formPrimatelj\" required placeholder=\"npr. Općinski sud u Vinkovcima\" style=\"width: 100%%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;\">\n");
     fprintf(fhtml, "        </div>\n");
-    fprintf(fhtml, "        <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">📧 Otvori e-mail klijent i pošalji podnesak</button>\n");
+    fprintf(fhtml, "        <div style=\"margin-bottom: 12px;\">\n");
+    fprintf(fhtml, "            <label class=\"label\">Odaberite PDF dokument</label>\n");
+    fprintf(fhtml, "            <input type=\"file\" id=\"formPdf\" accept=\".pdf\" required style=\"width: 100%%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; box-sizing: border-box;\">\n");
+    fprintf(fhtml, "        </div>\n");
+    fprintf(fhtml, "        <div style=\"margin-bottom: 15px;\">\n");
+    fprintf(fhtml, "            <label class=\"label\">Napomena / Sadržaj</label>\n");
+    fprintf(fhtml, "            <textarea id=\"formNapomena\" rows=\"2\" placeholder=\"Kratak opis...\" style=\"width: 100%%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;\"></textarea>\n");
+    fprintf(fhtml, "        </div>\n");
+    fprintf(fhtml, "        <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">🚀 Pripremi i pošalji podnesak</button>\n");
     fprintf(fhtml, "    </form>\n");
     fprintf(fhtml, "</div>\n\n");
 
@@ -122,18 +130,24 @@ int main(void) {
     fprintf(fhtml, "        content.innerHTML = `<p style=\"color:#666;\">Džepni C23 e-Spis je spreman. Pretražujte akte u pretincu ispod ili pripremite novi podnesak.</p>`;\n");
     fprintf(fhtml, "    }\n\n");
 
-    fprintf(fhtml, "    function posaljiMail(e) {\n");
+    fprintf(fhtml, "    function posaljiPodnesak(e) {\n");
     fprintf(fhtml, "        e.preventDefault();\n");
     fprintf(fhtml, "        const broj = document.getElementById('formBroj').value;\n");
     fprintf(fhtml, "        const posiljatelj = document.getElementById('formPosiljatelj').value;\n");
     fprintf(fhtml, "        const primatelj = document.getElementById('formPrimatelj').value;\n");
+    fprintf(fhtml, "        const napomena = document.getElementById('formNapomena').value;\n");
+    fprintf(fhtml, "        const fileInput = document.getElementById('formPdf');\n");
+    fprintf(fhtml, "        const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : 'Nije odabrana datoteka';\n");
+    fprintf(fhtml, "\n");
     fprintf(fhtml, "        const subject = encodeURIComponent(\"[Novi Podnesak e-Spis] \" + broj);\n");
     fprintf(fhtml, "        const body = encodeURIComponent(\n");
     fprintf(fhtml, "            \"SISTEMSKI PODNESAK ZA UDRUGU ZAJEDNICA RUKE\\n\\n\" +\n");
     fprintf(fhtml, "            \"Broj akta: \" + broj + \"\\n\" +\n");
     fprintf(fhtml, "            \"Pošiljatelj: \" + posiljatelj + \"\\n\" +\n");
-    fprintf(fhtml, "            \"Primatelj: \" + primatelj + \"\\n\\n\" +\n");
-    fprintf(fhtml, "            \"Napomena: Molimo priložite PDF dokument podneska uz ovu poruku prije slanja.\"\n");
+    fprintf(fhtml, "            \"Primatelj: \" + primatelj + \"\\n\" +\n");
+    fprintf(fhtml, "            \"Napomena: \" + napomena + \"\\n\" +\n");
+    fprintf(fhtml, "            \"Priloženi dokument: \" + fileName + \"\\n\\n\" +\n");
+    fprintf(fhtml, "            \"(Molimo priložite odabrani PDF '\" + fileName + \"' uz ovu poruku prije slanja na zajednicaruke@gmail.com).\"\n");
     fprintf(fhtml, "        );\n");
     fprintf(fhtml, "        window.location.href = `mailto:zajednicaruke@gmail.com?subject=${subject}&body=${body}`;\n");
     fprintf(fhtml, "    }\n\n");
@@ -172,6 +186,6 @@ int main(void) {
     fprintf(fhtml, "</body>\n</html>\n");
 
     fclose(fhtml);
-    printf("[C23 USPJEH] Generiran index.html sa suverenom Opcijom 1 (mailto veza).\n");
+    printf("[C23 USPJEH] Generiran index.html s lokalnim odabirom PDF dokumenta.\n");
     return EXIT_SUCCESS;
 }
