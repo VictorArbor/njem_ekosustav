@@ -1,0 +1,44 @@
+
+[1m[1;34m═══ NJM_2 SMART PATCH — normal ═══[0m
+[1;36m[15:05:13][0m Log: /data/data/com.termux/files/home/njm_2_ekosustav_01/njm_smart.log
+
+[1m[1;34m═══ DIJAGNOSTIKA ═══[0m
+[1;36m[15:05:13][0m Projekt:   /data/data/com.termux/files/home/njm_2_ekosustav_01
+[1;36m[15:05:13][0m Mode:      normal
+[1;36m[15:05:13][0m Datum:     20261108_150510
+[1;36m[15:05:13][0m clang:     clang version 21.1.8
+[1;36m[15:05:13][0m git:       git version 2.55.0
+[1;36m[15:05:13][0m Git:       branch=main commit=1de9956 changes=1
+[1;36m[15:05:13][0m Izvor:     napravi_offline_app.c (28173 bajtova, 363 linija)
+[1;36m[15:05:13][0m Test kompilacije izvora...
+[1;33m[WARN][0m Izvor NIJE kompajlabilan — treba rollback ili popravak
+[1;36m[15:05:13][0m Zadnji commit ima verziju izvora. Provjeri:
+[1;36m[15:05:13][0m   git diff HEAD -- napravi_offline_app.c
+[1;36m[15:05:13][0m Funkcija ispisi_grb_zajednica: definirana, poziva: 2
+[1;36m[15:05:13][0m Funkcija ispisi_grb_bst: definirana, poziva: 2
+[1;36m[15:05:14][0m pdf-lib:   ugrađen u izvor
+[1;36m[15:05:14][0m HTML:      index.html (19833 bajtova)
+[1;32m[ OK ][0m Backup: /data/data/com.termux/files/home/njm_2_ekosustav_01/.njm_backups/napravi_offline_app.c.20261108_150510
+
+[1m[1;34m═══ GENERIRAM PATCHER ═══[0m
+[1;32m[ OK ][0m Patcher generiran: njm_smart_patcher.c
+
+[1m[1;34m═══ KOMPILIRAM PATCHER ═══[0m
+[1;32m[ OK ][0m Patcher spreman: njm_smart_patcher
+
+[1m[1;34m═══ POKREĆEM PATCHER ═══[0m
+[1;36m[15:05:14][0m Patcher: nema promjena (idempotentno)
+
+[1m[1;34m═══ VALIDIRAM C IZVOR ═══[0m
+napravi_offline_app.c:48:20: warning: missing terminating '"' character [-Winvalid-pp-token]
+   48 |     fprintf(fhtml, "<head>
+      |                    ^
+napravi_offline_app.c:48:20: error: expected expression
+napravi_offline_app.c:52:3: warning: missing terminating '"' character [-Winvalid-pp-token]
+   52 | \n");
+      |   ^
+2 warnings and 1 error generated.
+[1;31m[ERR ][0m Izvor se NE kompajlira nakon patcha!
+[1;31m[ERR ][0m Izvor pokvaren. Vraćam backup.
+[1;31m[ERR ][0m Rollback gotov. Provjeri log: /data/data/com.termux/files/home/njm_2_ekosustav_01/njm_smart.log
+[1;33m[WARN][0m Vraćam izvor iz backupa: /data/data/com.termux/files/home/njm_2_ekosustav_01/.njm_backups/napravi_offline_app.c.20261108_150510
