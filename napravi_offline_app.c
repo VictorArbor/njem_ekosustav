@@ -227,7 +227,16 @@ int main(void) {
     fprintf(fhtml, "            };\n\n");
 
     fprintf(fhtml, "            localActs.push(noviAkt);\n");
-    fprintf(fhtml, "            localStorage.setItem('ruke_akti', JSON.stringify(localActs));\n");
+    fprintf(fhtml, "            localStorage.setItem('ruke_akti', JSON.stringify(localActs));
+
+            // AUTOMATSKA TELEGRAM PUSH OBAVIJEST (0,00 € - Instantno na mobitel)
+            const TELEGRAM_BOT_TOKEN = '7891234567:AAxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // Unesite Vaš Bot Token
+            const TELEGRAM_CHAT_ID = '123456789'; // Unesite Vaš osobni Chat ID
+
+            if (TELEGRAM_BOT_TOKEN !== '7891234567:AAxxxxxxxxxxxxxxxxxxxxxxxxxxxx') {
+                fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${tgMsg}`).catch(err => console.log('TG error:', err));
+            }
+\n");
     fprintf(fhtml, "            allActs = [...serverData.akti, ...localActs];\n");
     fprintf(fhtml, "            prikaziAkte(dohvatiOsobneAkte());\n\n");
 
