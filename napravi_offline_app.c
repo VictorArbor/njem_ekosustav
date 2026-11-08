@@ -4,6 +4,27 @@
 
 #define MAX_JSON_SIZE 65536
 
+/* ==== Početak: vizualni identiteti (auto-generirano) ==== */
+
+/* Službeni grb Zajednice RUKE (Verifikator i Prijava) */
+void ispisi_grb_zajednica(FILE *fhtml) {
+    fprintf(fhtml, "    <div class=\"logo-header\">\n");
+    fprintf(fhtml, "        <img src=\"logo.png\" alt=\"Zajednica RUKE Grb\">\n");
+    fprintf(fhtml, "        <div style=\"font-size: 16px; font-weight: bold; color: #2c3e50; margin-top: 8px;\">Zajednica RUKE</div>\n");
+    fprintf(fhtml, "        <div style=\"font-size: 11px; color: #7f8c8d;\">OIB: 64517735227 \xE2\x80\xA2 Zagreb</div>\n");
+    fprintf(fhtml, "    </div>\n");
+}
+
+/* Autentični BST pečat hipostazologije i zadružnog poduzetništva */
+void ispisi_grb_bst(FILE *fhtml) {
+    fprintf(fhtml, "    <div class=\"logo-header\">\n");
+    fprintf(fhtml, "        <div style=\"width: 90px; height: 90px; border-radius: 50%%; background: linear-gradient(135deg, #1a252f, #2c3e50); color: #f39c12; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 3px solid #f39c12;\">BST</div>\n");
+    fprintf(fhtml, "        <div style=\"font-size: 16px; font-weight: bold; color: #2c3e50; margin-top: 8px;\">ANUH \xE2\x80\xA2 Hipostazologija &amp; Zadružno Poduzetništvo</div>\n");
+    fprintf(fhtml, "        <div style=\"font-size: 11px; color: #7f8c8d;\">Fraktalni Meta-Ontološki Sustav \xE2\x80\xA2 Županja</div>\n");
+    fprintf(fhtml, "    </div>\n");
+}
+/* ==== Kraj: vizualni identiteti ==== */
+
 int main(void) {
     FILE *fjson = fopen("registar_akata.json", "r");
     if (!fjson) {
