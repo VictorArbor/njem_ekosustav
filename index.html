@@ -1,63 +1,114 @@
 <!DOCTYPE html>
 <html lang="hr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verifikacija Akata - Zajednica RUKE</title>
-<style>
-  body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; display: flex; justify-content: center; }
-  .card { background: #1e293b; padding: 2rem; border-radius: 12px; max-width: 600px; width: 100%; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-  h1 { color: #38bdf8; font-size: 1.5rem; border-bottom: 2px solid #334155; padding-bottom: 0.5rem; }
-  input, button { width: 100%; padding: 0.75rem; margin-top: 0.5rem; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; }
-  button { background: #0284c7; font-weight: bold; cursor: pointer; border: none; margin-top: 1rem; }
-  button:hover { background: #0369a1; }
-  .result { margin-top: 1.5rem; padding: 1rem; border-radius: 6px; display: none; background: #0f172a; border: 1px solid #334155; }
-  .valid { border-color: #22c55e; color: #4ade80; }
-  .invalid { border-color: #ef4444; color: #f87171; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Spis Verifikator & Pretinac — Zajednica RUKE</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #eef2f5; color: #333; margin: 0; padding: 20px; }
+        .card { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #28a745; }
+        .card-inbox { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #0056b3; }
+        .card-error { border-top-color: #dc3545; }
+        h1 { font-size: 20px; color: #1a252f; margin-bottom: 5px; }
+        .subtitle { font-size: 12px; color: #6c757d; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .badge { display: inline-block; padding: 6px 12px; background: #e8f5e9; color: #2e7d32; font-weight: bold; border-radius: 20px; font-size: 13px; margin-bottom: 15px; }
+        .info-group { margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px; }
+        .label { font-size: 11px; color: #888; text-transform: uppercase; }
+        .value { font-size: 13px; font-weight: 600; color: #2c3e50; word-break: break-all; }
+        .btn { display: inline-block; width: 48%; text-align: center; background: #0056b3; color: white; padding: 12px 0; text-decoration: none; font-weight: bold; border-radius: 8px; margin-top: 15px; font-size: 13px; }
+        .btn-potvrda { background: #28a745; margin-left: 3%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #555; }
+        .footer { text-align: center; font-size: 11px; color: #aaa; margin-top: 30px; }
+    </style>
 </head>
 <body>
-<div class="card">
-  <h1>Zajednica RUKE &bull; Verifikator Akata</h1>
-  <p style="font-size: 0.85rem; color: #94a3b8;">Matični OIB: 64517735227 | Sustav decentraliziranog verifikacijskog sidra</p>
-  <label>Broj akta:</label>
-<input type="text" id="broj_akta" placeholder="npr. MG/KANGOO-PUNOMOC-2026">
-  <label style="margin-top: 0.5rem; display:block;">Kontrolni broj:</label>
-<input type="text" id="ctrl_code" placeholder="npr. 589F-1771">
-  <button onclick="verificiraj()">VERIFICIRAJ AKT</button>
-  <div id="result" class="result"></div>
+
+<div id="app" class="card">
+    <div class="subtitle">Zajednica RUKE • Središnji e-Spis Verifikator</div>
+    <div id="content">Učitavanje verifikacije...</div>
 </div>
+
+<div class="card-inbox">
+    <div class="subtitle">📬 Digitalni Korisnički Pretinac & Arhiva Akata</div>
+    <div id="inbox-content">Učitavanje zapisa registra...</div>
+</div>
+
 <script>
-window.onload = function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.has('broj') && urlParams.has('kod')) {
-    document.getElementById('broj_akta').value = urlParams.get('broj');
-    document.getElementById('ctrl_code').value = urlParams.get('kod');
-    verificiraj();
-  }
-};
-async function verificiraj() {
-  const br = document.getElementById('broj_akta').value.trim();
-  const ctrl = document.getElementById('ctrl_code').value.trim().toUpperCase();
-  const res = document.getElementById('result');
-  res.style.display = 'block';
-  try {
-    const r = await fetch('registar_akata.json');
-    const data = await r.json();
-    const akt = data.akti.find(a => a.broj_akta === br && a.kontrolni_broj === ctrl);
-    if (akt) {
-      res.className = 'result valid';
-      res.innerHTML = `<strong>✅ AKT JE POTPUNO VALJAN I VERIFICIRAN</strong><br><br>` +
-                      `<b>Broj akta:</b> ${akt.broj_akta}<br>` +
-                      `<b>Kontrolni broj:</b> ${akt.kontrolni_broj}<br>` +
-                      `<b>Vremenska oznaka:</b> ${akt.timestamp}<br>` +
-                      `<b>SHA-256 Otisak:</b> <small>${akt.sha256}</small>`;
-    } else {
-      res.className = 'result invalid';
-      res.innerHTML = '❌ GRESKA: Akt s navedenim brojem i kontrolnim kodom nije pronađen u registru Zajednice RUKE!';
-    }
-  } catch (e) { res.className = 'result invalid'; res.innerHTML = 'Greška pri učitavanju registra.'; }
-}
+    const params = new URLSearchParams(window.location.search);
+    const trazeniBroj = params.get('broj');
+    const trazeniKod = params.get('kod');
+
+    fetch('registar_akata.json')
+        .then(res => res.json())
+        .then(data => {
+            const content = document.getElementById('content');
+            const app = document.getElementById('app');
+            const inbox = document.getElementById('inbox-content');
+
+            // 1. Verifikacija pojedinačnog akta u kartici
+            if (trazeniBroj && trazeniKod) {
+                const akt = data.akti.find(a => a.broj_akta === trazeniBroj && a.kontrolni_broj === trazeniKod);
+                if (akt) {
+                    content.innerHTML = `
+                        <div class="badge">✓ VERIFICIRAN IZVORNIK</div>
+                        <h1>Broj akta: ${akt.broj_akta}</h1>
+                        <div class="info-group"><div class="label">Kontrolni broj</div><div class="value">${akt.kontrolni_broj}</div></div>
+                        <div class="info-group"><div class="label">SHA-256 Otisak</div><div class="value">${akt.sha256}</div></div>
+                        <div class="info-group"><div class="label">Status podneska</div><div class="value">${akt.status || 'ZAPRIMLJENO'}</div></div>
+                        <div class="info-group"><div class="label">Pošiljatelj / Primatelj</div><div class="value">${akt.posiljatelj} ➔ ${akt.primatelj}</div></div>
+                        <div class="info-group"><div class="label">Vremenska oznaka (UTC)</div><div class="value">${akt.timestamp}</div></div>
+                        
+                        <a href="${akt.pdf_url}" download class="btn">📥 Izvorni QES PDF</a>
+                        <a href="${akt.potvrda_url}" download class="btn btn-potvrda">📜 e-Potvrda Zaprimanja</a>
+                    `;
+                } else {
+                    app.classList.add('card-error');
+                    content.innerHTML = `<div class="badge" style="background:#ffebee; color:#c62828;">❌ NEVAŽEĆI AKT</div><p>Dokument ne postoji u registru.</p>`;
+                }
+            } else {
+                content.innerHTML = `<p style="color:#666;">Dobrodošli. Skenirajte QR kod ili odaberite akt iz pretinca u nastavku.</p>`;
+            }
+
+            // 2. Generiranje tablice Pretinac / Inbox
+            let tableHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Broj zapisa</th>
+                            <th>Kontrolni kod</th>
+                            <th>Pošiljatelj / Primatelj</th>
+                            <th>Status</th>
+                            <th>Akcije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.akti.forEach(a => {
+                tableHtml += `
+                    <tr>
+                        <td><b>${a.broj_akta}</b></td>
+                        <td><code>${a.kontrolni_broj}</code></td>
+                        <td>${a.posiljatelj}<br><small style="color:#888;">➔ ${a.primatelj}</small></td>
+                        <td><span style="color:#28a745; font-weight:bold;">${a.status || 'ZAPRIMLJENO'}</span></td>
+                        <td>
+                            <a href="${a.pdf_url}" download style="color:#0056b3; font-weight:bold; margin-right:8px;">[PDF]</a>
+                            <a href="${a.potvrda_url}" download style="color:#28a745; font-weight:bold;">[Potvrda]</a>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `</tbody></table>`;
+            inbox.innerHTML = tableHtml;
+        })
+        .catch(err => {
+            document.getElementById('content').innerHTML = 'Greška pri pristupu registru.';
+        });
 </script>
+
+<div class="footer">Decentralizirani e-Spis Verifikator & Pretinac • Zajednica RUKE • eIDAS Compliant</div>
 </body>
 </html>
