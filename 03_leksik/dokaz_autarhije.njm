@@ -1,0 +1,6 @@
+# Ekstremno sažet NJM leksik: Laloglosator sam vodi računa o svemu
+mkm r10                      # Laloglosator sam alocira stog
+nve r1, 41664                # Unos masenog uzorka MID A
+nve r2, 65535                # Unos masenog uzorka MID B
+uis r0, r1, r2               # Algebarska unija (ORR) u 1 taktu
+pir                          # Nativni izlaz kroz SYS_exit (#93)

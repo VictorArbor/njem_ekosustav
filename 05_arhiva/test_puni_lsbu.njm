@@ -1,0 +1,53 @@
+# Puni LSBU-S test
+mkm r10
+
+# Naziv datoteke: "puni_test.txt"
+nve r2, 112
+ssb r2, r10, 0
+nve r2, 117
+ssb r2, r10, 1
+nve r2, 110
+ssb r2, r10, 2
+nve r2, 105
+ssb r2, r10, 3
+nve r2, 95
+ssb r2, r10, 4
+nve r2, 116
+ssb r2, r10, 5
+nve r2, 101
+ssb r2, r10, 6
+nve r2, 115
+ssb r2, r10, 7
+nve r2, 116
+ssb r2, r10, 8
+nve r2, 46
+ssb r2, r10, 9
+nve r2, 116
+ssb r2, r10, 10
+nve r2, 120
+ssb r2, r10, 11
+nve r2, 116
+ssb r2, r10, 12
+nve r2, 0
+ssb r2, r10, 13
+
+# Otvaranje datoteke
+opn r1, r10, 577, 420
+
+# Test algebarskih i bitnih mnemonika:
+nve r3, 100
+nve r4, 50
+pis r5, r3, r4      # AND: 100 & 50 = 32
+uis r6, r3, r4      # ORR: 100 | 50 = 118
+lpo r7, r5, 1       # LSL: 32 << 1 = 64 ('@')
+
+# Zapis dobivene vrijednosti 64 ('@')
+ssb r7, r10, 32
+nve r8, 32
+sab r4, r10, r8
+nve r6, 1
+wrt r1, r4, r6
+
+# Zatvaranje i izlaz
+cls r1
+pir

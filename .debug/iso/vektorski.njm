@@ -1,0 +1,6 @@
+mkm r10
+vps v0, v1, v2
+vus v3, v4, v5
+vrs v6, v7, v8
+vss v9, v10, v11
+pir

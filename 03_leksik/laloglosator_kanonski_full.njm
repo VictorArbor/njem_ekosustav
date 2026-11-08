@@ -1,0 +1,28 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM_2_EKOSUSTAV_01 :: KANONSKI LALOGLOSATOR FULL EXECUTION
+#   Sintaksa: NJM ISA v14.0 / RS-128 Silikonska Emanacija
+# ═══════════════════════════════════════════════════════════════════════════
+
+# 1. Alokacija fiksne stogne matrice na nultom sloju
+mkm r10
+
+# 2. Sinteza CTRL bloka za riječ LALOGLOSATOR (N = 11 fonema -> m.p = 1011_2 = 11)
+nve r1, 22528                # Topološki CTRL blok (m.p << 11 | f.u)
+nve r2, 65535                # Algebarska maska B
+
+# 3. RS-128 Algebarski ciklus nad U = {0,1}^128 (1 takt)
+uis r0, r1, r2               # Unija / Jednačenje po zvučnosti (ORR)
+srs r3, r0, r1               # Simetrična razlika / Sibilarizacija (EOR)
+
+# 4. Pohrana rezultata u memorijsku matricu na stogu
+ssb r0, r10, 0               # Spremanje primarnog masenog bajta
+ssb r3, r10, 1               # Spremanje sekundarnog masenog bajta
+
+# 5. Sistemska emanacija na stdout (SYS_write = 64, stdout = 1)
+nve r0, 1                    # X0 = 1 (stdout)
+sab r1, r10, 0               # X1 = adresa u stogu (X10 + 0)
+nve r2, 2                    # X2 = 2 bajta za ispis
+spe 64                       # Direct Kernel Syscall (SVC #0)
+
+# 6. Nativni i uredni izlaz iz procesa (SYS_exit = 93)
+pir

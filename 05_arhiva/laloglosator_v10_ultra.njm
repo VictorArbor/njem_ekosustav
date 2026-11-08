@@ -1,0 +1,27 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM-OS :: LALOGLOSATOR v10.0 ULTRA (CHUNKED PI ENGINE)
+# ═══════════════════════════════════════════════════════════════════════════
+
+mkm r10
+
+# 1. Fonemska algebra (1 CPU ciklus po transformaciji)
+nve r1, 18                   # 'K'
+nve r2, 1                    # Maska zvučnosti
+uis r3, r1, r2               # 'G'
+nve r4, 12                   # Maska mjesta/načina
+srs r5, r3, r4               # 'C'
+
+# 2. Ultra 64-bit Chunking za string "LALOGLOSATOR_PI_V10_OK\n" (23 bajta)
+# Chunk 1: 'LALOGLOS'
+n64 r6, 16684, 20289, 19276, 21327
+# Chunk 2: 'ATOR_PI_'
+# Chunk 3: 'V10_OK\n'
+
+# 3. Direktna emanacija na STDOUT
+nve r0, 1
+sab r1, r10, 0
+nve r2, 23
+nve r8, 64
+spe 64
+
+pir

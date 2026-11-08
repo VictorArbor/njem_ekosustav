@@ -1,0 +1,26 @@
+# ═══════════════════════════════════════════════════════════════
+# NJM :: BST ISA GORIVO (Usklađeno s parserom metabolizator_ID)
+# ═══════════════════════════════════════════════════════════════
+
+# 1. Konstrukcija MID-a
+V_N   = pis ( X0 , X1 )
+V_FU  = uis ( X2 , X3 )
+V_MU  = ris ( X4 , X5 )
+V0    = pps ( uis ( V_N , V_FU ) , V_MU )
+
+# 2. Transformacija
+V1    = uis ( V0 , X12 )
+V2    = ris ( V1 , X11 )
+V3    = pis ( V2 , X10 )
+
+# 3. Izvršenje na siliciju
+ooi ( V3 )
+
+# 4. Ekstrakcija rezultata
+REC_N  = pis ( V3 , X10 )
+REC_FU = uis ( V3 , X11 )
+REC_MU = ris ( V3 , X12 )
+
+pir ( REC_N )
+pir ( REC_FU )
+pir ( REC_MU )

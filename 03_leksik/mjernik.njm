@@ -1,0 +1,29 @@
+# =============================================================================
+# LALATOR :: PROTOTIP ZA MJERENJE PROTOČNOSTI I TAKTOVA (Riječ <-> MID)
+# =============================================================================
+
+mkm r10
+pmu_start
+
+# A. Riječ -> MID (Enkodiranje u 64-bitni MID)
+nve r1, "morfologija"
+enc r1, r0
+pmu_read r3
+
+# B. MID -> Riječ (Dekodiranje iz 64-bitnog MID-a)
+dec r0, r2
+pmu_read r4
+
+# C. Emanacija taktova i brzine na stdout preko Diskretnog kalkulatora
+wrt 1, "═══════════════════════════════════════════════════════════════\n"
+wrt 1, "⚡ NJM LALOGLOSATOR :: REZULTATI SILIKONSKOG MJERENJA (AArch64)\n"
+wrt 1, "═══════════════════════════════════════════════════════════════\n"
+wrt 1, "👉 ENC (Riječ -> MID) taktovi brojača : "
+wrt_num r3
+wrt 1, " ciklusa\n"
+wrt 1, "👉 DEC (MID -> Riječ) taktovi brojača : "
+wrt_num r4
+wrt 1, " ciklusa\n"
+wrt 1, "═══════════════════════════════════════════════════════════════\n"
+
+pir

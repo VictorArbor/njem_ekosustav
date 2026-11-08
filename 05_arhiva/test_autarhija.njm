@@ -1,0 +1,8 @@
+mkm r10              # PI-scratchpad pointer u r10
+nve r1, 7            # r1 = 7
+mno r2, r1, r1       # r2 = 49
+nve r3, 51           # r3 = 51
+sab r0, r2, r3       # r0 = 100
+ssb r0, r10, 0       # [PI+0] = 100
+ujb r4, r10, 0       # r4 = [PI+0] = 100
+pir                  # završetak, r0 je primarni odaziv

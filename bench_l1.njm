@@ -1,0 +1,9 @@
+mkm r10
+nve r0, 10000
+PETLJA_L:
+ldr_lit r2, PODACI_L1
+odu r0, r0, 1
+gnn r0, PETLJA_L
+pir
+PODACI_L1:
+nve r2, 16961

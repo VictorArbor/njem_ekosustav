@@ -1,0 +1,53 @@
+
+/* ─── 10 NOVIH MNEMONIKA ─── */
+
+/* CBZ Xn, offset — gjn */
+static void emit_cbz(int rn, int off) {
+    emit(0xB4000000 | ((off & 0x7FFFF) << 5) | (rn & 0x1F));
+}
+
+/* CBNZ Xn, offset — gnn */
+static void emit_cbnz(int rn, int off) {
+    emit(0xB5000000 | ((off & 0x7FFFF) << 5) | (rn & 0x1F));
+}
+
+/* B.cond offset — guo (uvjet = 0 za sada) */
+static void emit_b_cond(int cond, int off) {
+    emit(0x54000000 | ((off & 0x7FFFF) << 5) | (cond & 0xF));
+}
+
+/* BL offset — ppo */
+static void emit_bl(int off) {
+    emit(0x94000000 | (off & 0x3FFFFFF));
+}
+
+/* B offset — pio */
+static void emit_b(int off) {
+    emit(0x14000000 | (off & 0x3FFFFFF));
+}
+
+/* RET — pps, pos */
+static void emit_ret(void) {
+    emit(0xD65F03C0);
+}
+
+/* DSB SY — bar */
+static void emit_bar(void) {
+    emit(0xD5033F9F);
+}
+
+/* SVC #0 — spe */
+static void emit_svc(int sys_num) {
+    emit_mov_imm(8, sys_num);
+    emit(0xD4000001);
+}
+
+/* BLR Xn — ooi */
+static void emit_blr(int rn) {
+    emit(0xD63F0000 | ((rn & 0x1F) << 5));
+}
+
+/* STP XZR, XZR, [Xn] — pkm (simplificirano) */
+static void emit_memset(int rn) {
+    emit(0xA9007FE0 | ((rn & 0x1F) << 5));
+}

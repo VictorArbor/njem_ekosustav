@@ -1,0 +1,25 @@
+# =============================================================================
+# LALATOR LEKSIK :: ČISTI HRVATSKI MNEMONICI I LEKSIČKI UZORCI
+# Bez asemblera, bez 0x... hardkodiranja, bez ručnih bitova!
+# =============================================================================
+
+mkm r10
+
+# Testni uzorci: Lalator zadaje riječ, Generator stvara LSBU maseni uzorak
+test_uzorak "ja"
+test_uzorak "oko"
+test_uzorak "voda"
+test_uzorak "trava"
+test_uzorak "zemlja"
+test_uzorak "svjetlo"
+test_uzorak "kretanje"
+test_uzorak "prijatelj"
+test_uzorak "inteligencija"
+test_uzorak "morfologija"
+test_uzorak "transpilerija"
+test_uzorak "reverzibilnost"
+test_uzorak "metabolizacija"
+test_uzorak "samoreprodukcija"
+test_uzorak "kautarhičnostika"
+
+pir

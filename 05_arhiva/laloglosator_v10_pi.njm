@@ -1,0 +1,58 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM-OS :: LALOGLOSATOR v10.0 (DISKRETNI PI KALKULATOR & FONEM MATRIX)
+#   Obrada glasovnih promjena: Jednačenje po zvučnosti, Palatalizacija, Sibilarizacija
+# ═══════════════════════════════════════════════════════════════════════════
+
+mkm r10
+
+# 1. Definiranje fonemskih vektora (Bezvučni velar K -> Zvučni velar G -> Dental C)
+nve r1, 18                   # Fonem 'K' (0b00010010)
+nve r2, 1                    # Bit zvučnosti (Bit 0)
+
+# Jednačenje po zvučnosti (k -> g) u 1 CPU ciklusu bez L1/RAM skoka
+uis r3, r1, r2               # r3 = Fonem 'G' (0b00010011)
+
+# Sibilarizacija / Palatalizacija (k -> c)
+nve r4, 12                   # Maska alteracije mjesta tvorbe
+srs r5, r3, r4               # r5 = Fonem 'C'
+
+# 2. Diskretni kalkulator: 64-bitni zapis izlaznog teksta na stog
+# Zapisujemo string "LALOGLOSATOR_PI_V10_OK\n" (24 bajta) izravno
+# Chunk 1: 'LALOGLOS' -> 0x534F4C474F4C414C
+nve r6, 16684;  ssb r6, r10, 0   # 'L'
+nve r6, 65;     ssb r6, r10, 1   # 'A'
+nve r6, 76;     ssb r6, r10, 2   # 'L'
+nve r6, 79;     ssb r6, r10, 3   # 'O'
+nve r6, 71;     ssb r6, r10, 4   # 'G'
+nve r6, 76;     ssb r6, r10, 5   # 'L'
+nve r6, 79;     ssb r6, r10, 6   # 'O'
+nve r6, 83;     ssb r6, r10, 7   # 'S'
+
+# Chunk 2: 'ATOR_PI_' -> 0x5F49505F524F5441
+nve r6, 65;     ssb r6, r10, 8   # 'A'
+nve r6, 84;     ssb r6, r10, 9   # 'T'
+nve r6, 79;     ssb r6, r10, 10  # 'O'
+nve r6, 82;     ssb r6, r10, 11  # 'R'
+nve r6, 95;     ssb r6, r10, 12  # '_'
+nve r6, 80;     ssb r6, r10, 13  # 'P'
+nve r6, 73;     ssb r6, r10, 14  # 'I'
+nve r6, 95;     ssb r6, r10, 15  # '_'
+
+# Chunk 3: 'V10_OK\n'
+nve r6, 86;     ssb r6, r10, 16  # 'V'
+nve r6, 49;     ssb r6, r10, 17  # '1'
+nve r6, 48;     ssb r6, r10, 18  # '0'
+nve r6, 95;     ssb r6, r10, 19  # '_'
+nve r6, 79;     ssb r6, r10, 20  # 'O'
+nve r6, 75;     ssb r6, r10, 21  # 'K'
+nve r6, 10;     ssb r6, r10, 22  # '\n'
+
+# 3. Nativni sistemski poziv (sys_write / spe 64)
+nve r0, 1                    # stdout
+sab r1, r10, 0               # Adresa početka poruke u RAM-u
+nve r2, 23                   # Broj bajtova
+nve r8, 64                   # SYS_write
+spe 64
+
+# Uredan povratak u OS
+pir

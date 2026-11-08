@@ -1,0 +1,10 @@
+mkm r10
+wrt 1, "═══ LSBU ISA PROŠIRENI TEST ═══\n"
+nve r1, 12
+nve r2, 10
+pis r3, r1, r2
+ris r4, r1, r2
+uis r5, r1, r2
+srs r6, r1, r2
+wrt 1, "════════════════════════════════\n"
+pir

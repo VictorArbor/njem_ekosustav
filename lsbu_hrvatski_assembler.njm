@@ -1,0 +1,30 @@
+# LSBU HRVATSKI ASSEMBLER — 26 mnemonika
+V0_INIT   = 06 00 00 00 2B 00 00 00 00 00 00 00 3F 26 2E 00
+CODE_SIZE = 04 00 00 00
+RET       = C0 03 5F D6
+
+ujb => 01 04 40 39
+udb => 02 08 40 39
+usb => 01 68 60 38
+ssb => 01 04 00 39
+ume => 1F 00 01 EB
+gjn => 00 00 00 B4
+gnn => 00 00 00 B5
+guo => 00 00 00 54
+pje => E2 03 01 AA
+ppo => 00 00 00 94
+pio => 00 00 00 14
+nno => 1F 20 03 D5
+bar => BF 3B 03 D5
+spe => 01 00 00 D4
+mkm => 00 08 80 D2
+pkm => 00 08 80 D2
+ooi => 00 00 3F D6
+pos => C0 03 5F D6
+lpo => 02 EC 7A D3
+dpo => 02 FC 7A D3
+ibo => 02 00 40 D3
+pis => 00 1C 21 4E
+uis => 00 1C A0 4E
+ris => 00 1C 61 4E
+srs => 00 1C 23 6E

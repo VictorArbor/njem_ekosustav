@@ -1,0 +1,21 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   1. LSBU BENCHMARK ENGINE V4 (Nativni LSBU-S leksik)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Inicijalizacija registara masenih fonema
+nve r1, 43520               # Učitavanje testne maske 1 (0xAA00)
+nve r2, 21845               # Učitavanje testne maske 2 (0x5555)
+nve r3, 1000000             # Brojač petlje (1.000.000 iteracija)
+
+BENCH_PETLJA:
+# Skupovne algebarske operacije na silikonu
+uis r0, r1, r2              # Unija skupa (ORR)
+pis r0, r0, r1              # Presjek skupa (AND)
+srs r0, r0, r2              # Simetrična razlika (EOR)
+
+# Smanjivanje brojača i testiranje nule
+odu r3, r3, 1               # r3 = r3 - 1
+gnn r3, BENCH_PETLJA        # Ako nije nula, skok na BENCH_PETLJA
+
+# Uspješan izlazak kroz nativni sistemski poziv
+pir

@@ -1,0 +1,53 @@
+# ═══════════════════════════════════════════════════════════════
+# LSBU ISA v4 — TEST SVIH 32 MNEMONIKA
+# ═══════════════════════════════════════════════════════════════
+
+mkm r10
+wrt 1, "═══ LSBU ISA v4 — SVih 32 MNEMONIKA ═══\n"
+
+# ─── 1. OSNOVNI (4) ───
+nve r1, 12
+nve r2, 10
+pje r3, r1
+nno
+
+# ─── 2. SKALARNE SKUPOVNE (4) ───
+pis r4, r1, r2
+ris r5, r1, r2
+uis r6, r1, r2
+srs r7, r1, r2
+
+# ─── 3. BIT MANIPULACIJA (3) ───
+lpo r8, r1, 2
+dpo r9, r1, 2
+ibo r10, r1, 0, 4
+
+# ─── 4. MEMORIJA (3) ───
+ssb r4, r10, 0
+ujb r11, r10, 0
+pkm r10
+
+# ─── 5. USPOREDBA (1) ───
+ume r1, r2
+
+# ─── 6. KONTROLA TOKA (5) ───
+gjn r1, 0
+gnn r2, 0
+guo 0, 0
+ppo 0
+pio 0
+
+# ─── 7. POVRAT (2) ───
+pps
+pos
+
+# ─── 8. SPECIJALNI (3) ───
+bar
+spe 93
+ooi r1
+
+# ─── 9. SISTEMSKI (2) ───
+wrt 1, "════════════════════════════════════════\n"
+
+# ─── 10. IZLAZ (1) ───
+pir

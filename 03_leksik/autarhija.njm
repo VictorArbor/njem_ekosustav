@@ -1,0 +1,71 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM OS :: ISPRAVLJENI LEKSIČKI TOK (JEDNA NAREDBA PO RETKU)
+# ═══════════════════════════════════════════════════════════════════════════
+
+mkm r10
+
+nve r2, 78
+ssb r2, r10, 0
+nve r2, 74
+ssb r2, r10, 1
+nve r2, 77
+ssb r2, r10, 2
+nve r2, 32
+ssb r2, r10, 3
+nve r2, 79
+ssb r2, r10, 4
+nve r2, 83
+ssb r2, r10, 5
+nve r2, 58
+ssb r2, r10, 6
+nve r2, 58
+ssb r2, r10, 7
+nve r2, 32
+ssb r2, r10, 8
+nve r2, 65
+ssb r2, r10, 9
+nve r2, 85
+ssb r2, r10, 10
+nve r2, 84
+ssb r2, r10, 11
+nve r2, 65
+ssb r2, r10, 12
+nve r2, 82
+ssb r2, r10, 13
+nve r2, 72
+ssb r2, r10, 14
+nve r2, 73
+ssb r2, r10, 15
+nve r2, 74
+ssb r2, r10, 16
+nve r2, 65
+ssb r2, r10, 17
+nve r2, 32
+ssb r2, r10, 18
+nve r2, 68
+ssb r2, r10, 19
+nve r2, 79
+ssb r2, r10, 20
+nve r2, 75
+ssb r2, r10, 21
+nve r2, 65
+ssb r2, r10, 22
+nve r2, 90
+ssb r2, r10, 23
+nve r2, 65
+ssb r2, r10, 24
+nve r2, 78
+ssb r2, r10, 25
+nve r2, 65
+ssb r2, r10, 26
+nve r2, 33
+ssb r2, r10, 27
+nve r2, 13
+ssb r2, r10, 28
+nve r2, 10
+ssb r2, r10, 29
+
+sab r1, r10, 0
+wrt 1, r1, 30
+
+pir

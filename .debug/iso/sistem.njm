@@ -1,0 +1,6 @@
+mkm r10
+nve r0, 1
+nve r1, 0
+nve r2, 0
+spe 64
+pir

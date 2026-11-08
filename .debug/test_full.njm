@@ -1,0 +1,17 @@
+mkm r10
+wrt 1, "═══ LSBU ISA v4 — 32 MNEMONIKA ═══\n"
+nve r1, 12
+nve r2, 10
+pis r3, r1, r2
+ris r4, r1, r2
+uis r5, r1, r2
+srs r6, r1, r2
+pje r7, r1
+lpo r8, r1, 2
+dpo r9, r1, 2
+ibo r10, r1, 0, 4
+ume r1, r2
+nno
+bar
+wrt 1, "═══════════════════════════════════\n"
+pir

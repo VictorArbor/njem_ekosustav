@@ -1,0 +1,47 @@
+mkm r10
+vri r20
+
+# 1.000.000 metabolizacija fonema
+nve r0, 15625
+sab r0, r0, r0; sab r0, r0, r0; sab r0, r0, r0; sab r0, r0, r0; sab r0, r0, r0; sab r0, r0, r0
+
+nve r1, 18
+nve r2, 1
+nve r4, 12
+
+NATIVNA_PETLJA:
+uis r3, r1, r2
+srs r5, r3, r4
+odu r0, r0, 1
+gnn r0, NATIVNA_PETLJA
+
+vri r21
+
+# Ispis: "PI_LALOGLOSATOR_NATIVE_OK\n"
+nve r6, 80;  ssb r6, r10, 0
+nve r6, 73;  ssb r6, r10, 1
+nve r6, 95;  ssb r6, r10, 2
+nve r6, 76;  ssb r6, r10, 3
+nve r6, 65;  ssb r6, r10, 4
+nve r6, 76;  ssb r6, r10, 5
+nve r6, 79;  ssb r6, r10, 6
+nve r6, 71;  ssb r6, r10, 7
+nve r6, 76;  ssb r6, r10, 8
+nve r6, 79;  ssb r6, r10, 9
+nve r6, 83;  ssb r6, r10, 10
+nve r6, 65;  ssb r6, r10, 11
+nve r6, 84;  ssb r6, r10, 12
+nve r6, 79;  ssb r6, r10, 13
+nve r6, 82;  ssb r6, r10, 14
+nve r6, 95;  ssb r6, r10, 15
+nve r6, 79;  ssb r6, r10, 16
+nve r6, 75;  ssb r6, r10, 17
+nve r6, 10;  ssb r6, r10, 18
+
+nve r0, 1
+sab r1, r10, 0
+nve r2, 19
+nve r8, 64
+spe 64
+
+pir

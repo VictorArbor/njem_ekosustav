@@ -1,0 +1,25 @@
+# =============================================================================
+# LALATOR LEKSIK :: ISPITNA MATRICA (2 DO 16 FONEMA)
+# Nativna LSBU skupovna algebra sa spojenim CTRL (m.p || f.u) na AArch64
+# =============================================================================
+
+mkm r10
+
+# Ispitni uzorci: test_uzorak N_fonema, f.u_heks, "riječ"
+test_uzorak 2,  0x000000000000000A, "ja"
+test_uzorak 3,  0x00000000000003DF, "oko"
+test_uzorak 4,  0x000000000000037E, "voda"
+test_uzorak 5,  0x0000000000003CD4, "trava"
+test_uzorak 6,  0x000000000000BB7A, "zemlja"
+test_uzorak 7,  0x00000000003F4AB3, "svjetlo"
+test_uzorak 8,  0x0000000000AF39DB, "kretanje"
+test_uzorak 9,  0x000000000B9E16D0, "prijatelj"
+test_uzorak 10, 0x000000005EBCCF79, "inteligencija"
+test_uzorak 11, 0x0000000059FEFCFD, "morfologija"
+test_uzorak 12, 0x00000000D5AD3CD4, "transpilerija"
+test_uzorak 13, 0x00000000E96D2FBA, "reverzibilnost"
+test_uzorak 14, 0x00000000DB37A72D, "metabolizacija"
+test_uzorak 15, 0x000000006F43BF5B, "samoreprodukcija"
+test_uzorak 16, 0x00000000ED293D4B, "kautarhičnostika"
+
+pir

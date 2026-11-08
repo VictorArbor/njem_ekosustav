@@ -1,0 +1,12 @@
+mkm r10
+wrt 1, "═══ LSBU ISA v4 TEST ═══\n"
+nve r1, 12
+nve r2, 10
+pis r3, r1, r2
+ris r4, r1, r2
+uis r5, r1, r2
+srs r6, r1, r2
+pje r7, r1
+nno
+wrt 1, "══════════════════════════\n"
+pir

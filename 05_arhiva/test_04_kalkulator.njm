@@ -1,0 +1,9 @@
+mkm r10
+nve r1, 10
+nve r2, 20
+nve r3, 3
+nve r4, 5
+sab r5, r1, r2
+mno r6, r5, r3
+pje r0, r6
+pir

@@ -1,0 +1,14 @@
+mkm r10
+
+# Napiši "AB\n" u stack
+nve r5, 65; ssb r5, r10, 0
+nve r5, 66; ssb r5, r10, 1
+nve r5, 10; ssb r5, r10, 2
+
+# write(1, X10, 3)
+nve r0, 1
+sab r1, r10, 0
+nve r2, 3
+spe 64
+
+pir

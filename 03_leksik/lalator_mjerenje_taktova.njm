@@ -1,0 +1,32 @@
+# =============================================================================
+# LALATOR :: POGON ZA MJERENJE TAKTOVA (RIJEČ ⇆ MID)
+# Izravno očitavanje CNTVCT_EL0 s AArch64 registara kroz Glosator
+# =============================================================================
+
+mkm r10
+
+wrt 1, "=========================================================\n"
+wrt 1, "  NJM LALOGLOSATOR :: TAKTOVI ENKODIRANJA I DEKODIRANJA  \n"
+wrt 1, "=========================================================\n\n"
+
+# Inicijalizacija i početak mjernog bloka
+pmu_start
+
+# --- 1. ENKODIRANJE: Riječ -> MID ---
+enc
+
+# --- 2. DEKODIRANJE: MID -> Riječ ---
+dec
+
+# Ispis izmjerenih taktova za 100.000 iteracija
+wrt 1, "🔤 UZORAK: 'morfologija'\n"
+wrt 1, "   ⚡ ENKODIRANJE (Riječ -> MID) : "
+wrt_num r3
+wrt 1, " taktova (prosječno po operaciji)\n"
+
+wrt 1, "   ⚡ DEKODIRANJE (MID -> Riječ) : "
+wrt_num r4
+wrt 1, " taktova (prosječno po operaciji)\n"
+wrt 1, "---------------------------------------------------------\n"
+
+pir

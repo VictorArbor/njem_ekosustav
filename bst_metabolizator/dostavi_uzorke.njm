@@ -1,0 +1,22 @@
+# ═══════════════════════════════════════════════════════════════
+# NJM :: KANONSKO BST ISA GORIVO (LSBU Skupovna Logika)
+# ═══════════════════════════════════════════════════════════════
+
+V_N   = vps ( X0 , X1 )
+V_FU  = vss ( X2 , X3 )
+V_MU  = vrs ( X4 , X5 )
+V0    = vus ( vus ( V_N , V_FU ) , V_MU )
+
+V1    = vss ( V0 , X12 )
+V2    = vrs ( V1 , X11 )
+V3    = vps ( V2 , X10 )
+
+ooi ( V3 )
+
+REC_N  = vps ( V3 , X10 )
+REC_FU = vss ( V3 , X11 )
+REC_MU = vrs ( V3 , X12 )
+
+pir ( REC_N )
+pir ( REC_FU )
+pir ( REC_MU )

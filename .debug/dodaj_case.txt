@@ -1,0 +1,23 @@
+
+        /* Kontrola toka */
+        if (strncmp(p, "gjn ", 4) == 0) { int a, b; if (sscanf(p+4, "r%d, %d", &a, &b)==2) emit_cbz(a, b); continue; }
+        if (strncmp(p, "gnn ", 4) == 0) { int a, b; if (sscanf(p+4, "r%d, %d", &a, &b)==2) emit_cbnz(a, b); continue; }
+        if (strncmp(p, "guo ", 4) == 0) { int a, b; if (sscanf(p+4, "%d, %d", &a, &b)==2) emit_b_cond(a, b); continue; }
+        if (strncmp(p, "ppo ", 4) == 0) { int a; if (sscanf(p+4, "%d", &a)==1) emit_bl(a); continue; }
+        if (strncmp(p, "pio ", 4) == 0) { int a; if (sscanf(p+4, "%d", &a)==1) emit_b(a); continue; }
+
+        /* RET */
+        if (strncmp(p, "pps", 3) == 0) { emit_ret(); continue; }
+        if (strncmp(p, "pos", 3) == 0) { emit_ret(); continue; }
+
+        /* Barijera */
+        if (strncmp(p, "bar", 3) == 0) { emit_bar(); continue; }
+
+        /* Syscall */
+        if (strncmp(p, "spe ", 4) == 0) { int a; if (sscanf(p+4, "%d", &a)==1) emit_svc(a); continue; }
+
+        /* JIT */
+        if (strncmp(p, "ooi ", 4) == 0) { int a; if (sscanf(p+4, "r%d", &a)==1) emit_blr(a); continue; }
+
+        /* Memset */
+        if (strncmp(p, "pkm ", 4) == 0) { int a; if (sscanf(p+4, "r%d", &a)==1) emit_memset(a); continue; }

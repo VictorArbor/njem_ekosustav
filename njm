@@ -1,0 +1,32 @@
+#!/data/data/com.termux/files/usr/bin/bash
+clear
+echo "╔═══════════════════════════════════════════════════════════════╗"
+echo "║   NJM_2_EKOSUSTAV_01 :: KANONSKI LSBU v6 SILICIJSKI AGREGAT   ║"
+echo "║   Univerzum: 𝒰 = {0,1}^128  |  Operatori: ∩  ∪  \  Δ  ⇒       ║"
+echo "╚═══════════════════════════════════════════════════════════════╝"
+echo " Unesite LSBU v6 izraz, '.kalkulator', '.vrabac', '.emaniraj' ili 'exit'."
+echo ""
+
+while true; do
+    read -p "njm_2_ekosustav_01$ " UNOS
+
+    if [[ "$UNOS" == "exit" || "$UNOS" == "izlaz" ]]; then
+        echo "Gašenje agregata..."
+        break
+    elif [[ "$UNOS" == ".kalkulator" ]]; then
+        ./bst_kalkulator
+    elif [[ "$UNOS" == ".emaniraj" || "$UNOS" == ".pokreni" ]]; then
+        ./lsbu_agregat
+    elif [[ "$UNOS" == ".vrabac" ]]; then
+        echo -e "\n[LSBU v6 PROGRAM :: vrabac -> vrapca]"
+        echo "S = 0x060000002B000000000000003F262E00"
+        echo "A = 0x00000000000000000000000000002E00  # Maska za 'a'"
+        echo "B = 0x00000000000000000000000000000001  # Mutacija b->p"
+        echo "X = S \\ A"
+        echo "Y = X Δ B"
+        echo "⇒ Y"
+        ./lsbu_agregat
+    elif [[ -n "$UNOS" ]]; then
+        echo " [LSBU v6 SKUPNI UNOS]: $UNOS"
+    fi
+done

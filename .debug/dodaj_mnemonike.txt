@@ -1,0 +1,31 @@
+        "srs")
+            rd=$(parse_val ${a[0]:-0}); rn=$(parse_val ${a[1]:-0}); rm=$(parse_val ${a[2]:-0})
+            emit_hex $((0xCA000000 | (rm << 16) | (rn << 5) | rd))
+            ;;
+        "odu")
+            rd=$(parse_val ${a[0]:-0}); rn=$(parse_val ${a[1]:-0}); rm_raw=${a[2]:-0}
+            if [[ "$rm_raw" == r* || "$rm_raw" == x* ]]; then
+                rm=$(parse_val $rm_raw)
+                emit_hex $((0xCB000000 | (rm << 16) | (rn << 5) | rd))
+            else
+                imm=$(parse_val $rm_raw)
+                emit_hex $((0xD1000000 | ((imm & 0xFFF) << 10) | (rn << 5) | rd))
+            fi
+            ;;
+        "vri")
+            # SYS_clock_gettime(CLOCK_MONOTONIC, &timespec)
+            rd=$(parse_val ${a[0]:-0})
+            emit_hex 0xD2800020                     # MOV X0, #1 (CLOCK_MONOTONIC)
+            emit_hex $((0x910003E0 | rd))           # ADD Xd, SP, #0
+            emit_hex 0xD2800E28                     # MOV X8, #113
+            emit_hex 0xD4000001                     # SVC #0
+            ;;
+        "gnn")
+            rt=$(parse_val ${a[0]:-0})
+            target=${a[1]:-""}
+            target_addr=${LABELE["$target"]:-0}
+            off_bytes=$((target_addr - CURR_PC))
+            off_imm=$(((off_bytes / 4) & 0x7FFFF))
+            emit_hex $((0xB5000000 | (off_imm << 5) | rt))
+            CURR_PC=$((CURR_PC + 4))
+            ;;

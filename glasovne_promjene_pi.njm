@@ -1,0 +1,51 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM-OS :: LALOGLOSATOR PI ENGINE (NATIVNE GLASOVNE PROMJENE)
+#   Obrada fonemskih obilježja izravno u AArch64 registrima i L1 Cacheu
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Alokacija radnog prostora
+mkm r10
+
+# Fonem 'K' (bezvučni velar) spakiran u registar r1 (Bit0 = 0 za bezvučnost)
+nve r1, 18                   # Vector za 'K' (0b00010010)
+
+# Maska za zvučnost (Bit 0 = 1)
+nve r2, 1
+
+# ─── 1. JEDNAČENJE PO ZVUČNOSTI (k -> g) ─────────────────────────────────
+# Umjesto traženja u RAM-u, spajamo bit zvučnosti u 1 CPU ciklusu preko 'uis' (ORR)
+uis r3, r1, r2               # r3 postaje 'G' (0b00010011)
+
+# ─── 2. SIBILARIZACIJA (k -> c) / INVERZIJA OBILJEŽJA ────────────────────
+# Primjena skupovne simetrične razlike 'srs' (EOR) nad obilježjima tvorbe
+nve r4, 12                   # Maska mjesta/načina tvorbe
+srs r5, r3, r4               # r5 postaje fonem 'C'
+
+# ─── 3. SPREMANJE REZULTATA U L1 RAM I PRIPREMA ZA STDOUT ────────────────
+ssb r1, r10, 0               # Ulazni fonem K
+ssb r3, r10, 1               # Transformirani fonem G
+ssb r5, r10, 2               # Transformirani fonem C
+
+# Priprema poruke "PI_GLAS_OK\n"
+nve r6, 80;  ssb r6, r10, 16 # 'P'
+nve r6, 73;  ssb r6, r10, 17 # 'I'
+nve r6, 95;  ssb r6, r10, 18 # '_'
+nve r6, 71;  ssb r6, r10, 19 # 'G'
+nve r6, 76;  ssb r6, r10, 20 # 'L'
+nve r6, 65;  ssb r6, r10, 21 # 'A'
+nve r6, 83;  ssb r6, r10, 22 # 'S'
+nve r6, 95;  ssb r6, r10, 23 # '_'
+nve r6, 79;  ssb r6, r10, 24 # 'O'
+nve r6, 75;  ssb r6, r10, 25 # 'K'
+nve r6, 10;  ssb r6, r10, 26 # '\n'
+
+# Zapisivanje poruke na STDOUT (spe 64 / write)
+nve r0, 1                    # stdout = 1
+nve r6, 16
+sab r1, r10, r6              # Adresa teksta (r10 + 16)
+nve r2, 11                   # Duljina = 11 bajtova
+nve r8, 64                   # SYS_write
+spe 64
+
+# Uredan nativni izlaz
+pir

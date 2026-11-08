@@ -1,0 +1,70 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM-OS :: AUTONOMNI LALOGLOSATOR BENCHMARK ENGINE v11.0
+#   Nativno mjerenje taktova i metabolizacija unutar AArch64 silikona
+# ═══════════════════════════════════════════════════════════════════════════
+
+mkm r10
+
+# 1. ČITANJE HARDVERSKOG POČETNOG TAKTA DEREKTNO IZ ČIPA
+vri r20                      # r20 = START HARDWARE CYCLES
+
+# 2. POSTAVLJANJE BROJAČA METABOLIZACIJA (1.000.000 FONEMA)
+nve r0, 15625
+sab r0, r0, r0               # r0 = 31250
+sab r0, r0, r0               # r0 = 62500
+sab r0, r0, r0               # r0 = 125000
+sab r0, r0, r0               # r0 = 250000
+sab r0, r0, r0               # r0 = 500000
+sab r0, r0, r0               # r0 = 1.000.000 (Točno 1M)
+
+nve r1, 18                   # Fonem 'K'
+nve r2, 1                    # Maska zvučnosti
+nve r4, 12                   # Maska alteracije
+nve r30, 0                   # Akumulator metabolizacija
+
+NATIVNA_PETLJA:
+uis r3, r1, r2               # Metabolizacija 1: Jednačenje po zvučnosti
+srs r5, r3, r4               # Metabolizacija 2: Sibilarizacija
+sab r30, r30, 2              # Inkrement brojača metabolizacija za +2
+
+odu r0, r0, 1
+gnn r0, NATIVNA_PETLJA
+
+# 3. ČITANJE HARDVERSKOG ZAVRŠNOG TAKTA
+vri r21                      # r21 = END HARDWARE CYCLES
+
+# 4. DISKRETNI KALKULATOR: Izračun razlike taktova r22 = r21 - r20
+odu r22, r21, r20            # r22 = ČISTI UUTARNJI TAKTOVI SILIKONA
+
+# 5. EMANACIJA REZULTATA "LALOGLOSATOR_NATIVE_OK\n" NA STDOUT
+nve r6, 76;  ssb r6, r10, 0  # 'L'
+nve r6, 65;  ssb r6, r10, 1  # 'A'
+nve r6, 76;  ssb r6, r10, 2  # 'L'
+nve r6, 79;  ssb r6, r10, 3  # 'O'
+nve r6, 71;  ssb r6, r10, 4  # 'G'
+nve r6, 76;  ssb r6, r10, 5  # 'L'
+nve r6, 79;  ssb r6, r10, 6  # 'O'
+nve r6, 83;  ssb r6, r10, 7  # 'S'
+nve r6, 65;  ssb r6, r10, 8  # 'A'
+nve r6, 84;  ssb r6, r10, 9  # 'T'
+nve r6, 79;  ssb r6, r10, 10 # 'O'
+nve r6, 82;  ssb r6, r10, 11 # 'R'
+nve r6, 95;  ssb r6, r10, 12 # '_'
+nve r6, 78;  ssb r6, r10, 13 # 'N'
+nve r6, 65;  ssb r6, r10, 14 # 'A'
+nve r6, 84;  ssb r6, r10, 15 # 'T'
+nve r6, 73;  ssb r6, r10, 16 # 'I'
+nve r6, 86;  ssb r6, r10, 17 # 'V'
+nve r6, 69;  ssb r6, r10, 18 # 'E'
+nve r6, 95;  ssb r6, r10, 19 # '_'
+nve r6, 79;  ssb r6, r10, 20 # 'O'
+nve r6, 75;  ssb r6, r10, 21 # 'K'
+nve r6, 10;  ssb r6, r10, 22 # '\n'
+
+nve r0, 1
+sab r1, r10, 0
+nve r2, 23
+nve r8, 64
+spe 64
+
+pir

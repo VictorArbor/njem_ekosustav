@@ -1,0 +1,6 @@
+mkm r10
+nve r1, 7
+mno r0, r1, r1
+ssb r0, r10, 0
+ujb r0, r10, 0
+pir

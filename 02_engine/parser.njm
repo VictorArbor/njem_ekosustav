@@ -1,0 +1,98 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM-OS :: AUTARHIČNI NATIVNI LSBU-S PREVODITELJ (lsbu_parser.njm)
+#   Ispravljena registarska alokacija i EOF detekcija
+# ═══════════════════════════════════════════════════════════════════════════
+
+# 1. Alokacija radnog prostora na stogu (512 bajtova)
+mkm r10
+
+# Immena datoteka
+# r10 + 0  = "ulaz.njm\0"
+# r10 + 16 = "izlaz.elf\0"
+nve r2, 117; ssb r2, r10, 0   # 'u'
+nve r2, 108; ssb r2, r10, 1   # 'l'
+nve r2, 97;  ssb r2, r10, 2   # 'a'
+nve r2, 122; ssb r2, r10, 3   # 'z'
+nve r2, 46;  ssb r2, r10, 4   # '.'
+nve r2, 110; ssb r2, r10, 5   # 'n'
+nve r2, 106; ssb r2, r10, 6   # 'j'
+nve r2, 109; ssb r2, r10, 7   # 'm'
+nve r2, 0;   ssb r2, r10, 8   # \0
+
+nve r2, 105; ssb r2, r10, 16  # 'i'
+nve r2, 122; ssb r2, r10, 17  # 'z'
+nve r2, 108; ssb r2, r10, 18  # 'l'
+nve r2, 97;  ssb r2, r10, 19  # 'a'
+nve r2, 122; ssb r2, r10, 20  # 'z'
+nve r2, 46;  ssb r2, r10, 21  # '.'
+nve r2, 101; ssb r2, r10, 22  # 'e'
+nve r2, 108; ssb r2, r10, 23  # 'l'
+nve r2, 102; ssb r2, r10, 24  # 'f'
+nve r2, 0;   ssb r2, r10, 25  # \0
+
+# 2. Otvaranje "ulaz.njm" za čitanje (O_RDONLY = 0)
+nve r1, 0
+sab r1, r10, r1              # Adresa "ulaz.njm"
+opn r3, r1, 0, 0             # r3 = Ulazni File Descriptor
+
+# 3. Otvaranje "izlaz.elf" za pisanje (O_WRONLY|O_CREAT|O_TRUNC = 577, 0755)
+nve r1, 16
+sab r1, r10, r1              # Adresa "izlaz.elf"
+opn r4, r1, 577, 493         # r4 = Izlazni File Descriptor
+
+# 4. Zapisivanje ELF64 Magic Header-a (8 bajtova: \x7f ELF ...)
+nve r2, 127; ssb r2, r10, 32  # 0x7F
+nve r2, 69;  ssb r2, r10, 33  # 'E'
+nve r2, 76;  ssb r2, r10, 34  # 'L'
+nve r2, 70;  ssb r2, r10, 35  # 'F'
+nve r2, 2;   ssb r2, r10, 36  # ELFCLASS64
+nve r2, 1;   ssb r2, r10, 37  # ELFDATA2LSB
+nve r2, 1;   ssb r2, r10, 38  # EV_CURRENT
+nve r2, 0;   ssb r2, r10, 39  # ELFOSABI_NONE
+
+nve r1, 32
+sab r1, r10, r1
+wrt r4, r1, 8
+
+# 5. Glavna petlja parsiranja
+PETLJA_PARSERA:
+# Priprema registara za SYS_read (63): read(fd=r3, buf=r10+64, count=1)
+pje r0, r3                   # x0 = fd (r3)
+nve r1, 64
+sab r1, r10, r1              # x1 = buffer adresa
+nve r2, 1                    # x2 = count (1 bajt)
+nve r8, 63                   # x8 = SYS_read (63)
+spe 63                       # Sistemski poziv read
+
+# Ako read vrati <= 0 (x0 == 0 znači EOF), izađi iz petlje
+gjn r0, KRAJ_PARSERA
+
+# Učitavamo pročitani bajt u r5
+ujb r5, r10, 64
+
+# Provjera je li znak 's' (ASCII 115) -> Oduzimamo 115 od r5 u r6
+nve r7, 115
+odu r6, r5, r7
+# Ako r6 NIJE 0 (različito od 's'), preskoči emitiranje opkoda
+gnn r6, SKOK_SLJEDECI
+
+# Ako JEST 's', emitiramo AArch64 'ADD X0, X1, X2' opkod (4 bajta)
+nve r2, 0;   ssb r2, r10, 100
+nve r2, 0;   ssb r2, r10, 101
+nve r2, 2;   ssb r2, r10, 102
+nve r2, 139; ssb r2, r10, 103
+
+nve r1, 100
+sab r1, r10, r1
+wrt r4, r1, 4
+
+SKOK_SLJEDECI:
+pio PETLJA_PARSERA
+
+KRAJ_PARSERA:
+# Zatvaranje datoteka
+cls r3
+cls r4
+
+# Uredan izlaz
+pir

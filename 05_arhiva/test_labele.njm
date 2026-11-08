@@ -1,0 +1,58 @@
+# Test Turing-potpunosti: Petlja i labele u LSBU-S
+mkm r10
+
+# Stvaranje naziva datoteke: "abeceda.txt"
+nve r2, 97
+ssb r2, r10, 0
+nve r2, 98
+ssb r2, r10, 1
+nve r2, 101
+ssb r2, r10, 2
+nve r2, 99
+ssb r2, r10, 3
+nve r2, 101
+ssb r2, r10, 4
+nve r2, 100
+ssb r2, r10, 5
+nve r2, 97
+ssb r2, r10, 6
+nve r2, 46
+ssb r2, r10, 7
+nve r2, 116
+ssb r2, r10, 8
+nve r2, 120
+ssb r2, r10, 9
+nve r2, 116
+ssb r2, r10, 10
+nve r2, 0
+ssb r2, r10, 11
+
+# Otvaranje datoteke
+opn r1, r10, 577, 420
+
+# Postavljanje radnog bafera na offsetu 32
+nve r8, 32
+sab r4, r10, r8
+
+# Inicijalizacija brojača: Slovo 'A' (65) do 'Z' (90) -> 26 slova
+nve r20, 65
+nve r21, 26
+
+PETLJA:
+# Zapis trenutnog znaka u bafer
+ssb r20, r4, 0
+
+# Pisanje bajta u datoteku preko r1 deskriptora
+nve r6, 1
+wrt r1, r4, r6
+
+# Inkrement slova i dekrement brojača
+sab r20, r20, 1
+odu r21, r21, 1
+
+# Uvjetno grananje: ako r21 nije 0, skoči natrag na PETLJA
+gnn r21, PETLJA
+
+# Zatvaranje datoteke i izlaz
+cls r1
+pir

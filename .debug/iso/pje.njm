@@ -1,0 +1,4 @@
+mkm r10
+nve r1, 12
+pje r3, r1
+pir

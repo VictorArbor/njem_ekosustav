@@ -1,0 +1,822 @@
+═══════════════════════════════════════════════════════════════════
+  NJM_2_EKOSUSTAV_01 — KOMPLETAN EXPORT
+  Datum: $(date)
+═══════════════════════════════════════════════════════════════════
+
+
+═══════════════════════════════════════════════════════════════════
+  DATOTEKA: glosator_v3.txt
+═══════════════════════════════════════════════════════════════════
+
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <sys/mman.h>
+
+#define SYS_write 64
+#define SYS_exit  93
+#define SYS_mmap  222
+
+static long sys_call(long n, long a, long b, long c, long d, long e, long f) {
+    register long x8 __asm__("x8") = n;
+    register long x0 __asm__("x0") = a;
+    register long x1 __asm__("x1") = b;
+    register long x2 __asm__("x2") = c;
+    register long x3 __asm__("x3") = d;
+    register long x4 __asm__("x4") = e;
+    register long x5 __asm__("x5") = f;
+    __asm__ volatile("svc 0" : "+r"(x0) : "r"(x8), "r"(x1), "r"(x2), "r"(x3), "r"(x4), "r"(x5));
+    return x0;
+}
+
+static uint32_t *jit_mem = NULL;
+static size_t jit_pos = 0;
+
+static void emit(uint32_t op) {
+    if (jit_mem && jit_pos < 4096) jit_mem[jit_pos++] = op;
+}
+
+/* AArch64 emit funkcije */
+static void emit_mov_imm(int rd, uint16_t imm) {
+    emit(0xD2800000 | ((imm & 0xFFFF) << 5) | (rd & 0x1F));
+}
+static void emit_orr(int rd, int rn, int rm) {
+    emit(0xAA000000 | ((rm & 0x1F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F));
+}
+static void emit_eor(int rd, int rn, int rm) {
+    emit(0xCA000000 | ((rm & 0x1F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F));
+}
+static void emit_and(int rd, int rn, int rm) {
+    emit(0x8A000000 | ((rm & 0x1F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F));
+}
+static void emit_bic(int rd, int rn, int rm) {
+    emit(0x8A200000 | ((rm & 0x1F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F));
+}
+static void emit_lsr_imm(int rd, int rn, int imm) {
+    emit(0xD3400000 | ((imm & 0x3F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F));
+}
+static void emit_lsl_imm(int rd, int rn, int imm) {
+    emit(0xD3400000 | (0x1F << 16) | ((imm & 0x3F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F));
+}
+static void emit_ubfx(int rd, int rn, int lsb, int width) {
+    emit(0x53000000 | (((width-1) & 0x3F) << 16) | (((lsb) & 0x3F) << 10) | ((rn & 0x1F) << 5) | (rd & 0x1F));
+}
+static void emit_sub_sp(uint16_t imm) {
+    emit(0xD10003FF | ((imm & 0xFFF) << 10));
+}
+static void emit_add_x_sp(int rd) {
+    emit(0x91000000 | (31 << 5) | (rd & 0x1F));
+}
+static void emit_exit(void) {
+    emit(0xD2800000);
+    emit(0xD2800BA8);
+    emit(0xD4000001);
+}
+
+static void ispisi_string(const char *s) {
+    long len = 0;
+    while (s[len]) len++;
+    sys_call(SYS_write, 1, (long)s, len, 0, 0, 0);
+}
+
+static void ispisi_broj(int n) {
+    char buf[16];
+    int i = 0, neg = 0;
+    if (n < 0) { neg = 1; n = -n; }
+    if (n == 0) buf[i++] = '0';
+    while (n > 0) { buf[i++] = '0' + (n % 10); n /= 10; }
+    if (neg) buf[i++] = '-';
+    for (int j = 0; j < i / 2; j++) {
+        char t = buf[j]; buf[j] = buf[i-1-j]; buf[i-1-j] = t;
+    }
+    buf[i] = '\0';
+    ispisi_string(buf);
+}
+
+static int parse_int(const char *s) {
+    int v = 0, neg = 0;
+    if (*s == '-') { neg = 1; s++; }
+    while (*s >= '0' && *s <= '9') v = v * 10 + (*s++ - '0');
+    return neg ? -v : v;
+}
+
+int main(void) {
+    jit_mem = (uint32_t *)sys_call(SYS_mmap, 0, 16384, 3, 0x22, -1, 0);
+    if (!jit_mem || (long)jit_mem < 0) return 1;
+    
+    emit_sub_sp(512);
+    emit_add_x_sp(10);
+    
+    char linija[512];
+    while (fgets(linija, sizeof(linija), stdin)) {
+        char *p = linija;
+        while (*p == ' ' || *p == '\t') p++;
+        if (*p == '#' || *p == '\n' || *p == '\0') continue;
+        
+        /* mkm */
+        if (strncmp(p, "mkm", 3) == 0) continue;
+        
+        /* wrt */
+        if (strncmp(p, "wrt ", 4) == 0) {
+            char *q1 = strchr(p, '"');
+            char *q2 = q1 ? strchr(q1 + 1, '"') : NULL;
+            if (q1 && q2) {
+                *q2 = '\0';
+                for (char *c = q1 + 1; *c; c++) {
+                    if (*c == '\\' && *(c + 1) == 'n') {
+                        *c = '\n';
+                        memmove(c + 1, c + 2, strlen(c + 2) + 1);
+                    }
+                }
+                ispisi_string(q1 + 1);
+            }
+            continue;
+        }
+        
+        /* nve */
+        if (strncmp(p, "nve ", 4) == 0) {
+            int rd, imm;
+            if (sscanf(p + 4, "r%d, %d", &rd, &imm) == 2) emit_mov_imm(rd, imm);
+            continue;
+        }
+        
+        /* uis / ORR */
+        if (strncmp(p, "uis ", 4) == 0) {
+            int rd, rn, rm;
+            if (sscanf(p + 4, "r%d, r%d, r%d", &rd, &rn, &rm) == 3) emit_orr(rd, rn, rm);
+            continue;
+        }
+        
+        /* srs / EOR */
+        if (strncmp(p, "srs ", 4) == 0) {
+            int rd, rn, rm;
+            if (sscanf(p + 4, "r%d, r%d, r%d", &rd, &rn, &rm) == 3) emit_eor(rd, rn, rm);
+            continue;
+        }
+        
+        /* pis / AND */
+        if (strncmp(p, "pis ", 4) == 0) {
+            int rd, rn, rm;
+            if (sscanf(p + 4, "r%d, r%d, r%d", &rd, &rn, &rm) == 3) emit_and(rd, rn, rm);
+            continue;
+        }
+        
+        /* ris / BIC */
+        if (strncmp(p, "ris ", 4) == 0) {
+            int rd, rn, rm;
+            if (sscanf(p + 4, "r%d, r%d, r%d", &rd, &rn, &rm) == 3) emit_bic(rd, rn, rm);
+            continue;
+        }
+        
+        /* dpo / LSR */
+        if (strncmp(p, "dpo ", 4) == 0) {
+            int rd, rn, imm;
+            if (sscanf(p + 4, "r%d, r%d, %d", &rd, &rn, &imm) == 3) emit_lsr_imm(rd, rn, imm);
+            continue;
+        }
+        
+        /* lpo / LSL */
+        if (strncmp(p, "lpo ", 4) == 0) {
+            int rd, rn, imm;
+            if (sscanf(p + 4, "r%d, r%d, %d", &rd, &rn, &imm) == 3) emit_lsl_imm(rd, rn, imm);
+            continue;
+        }
+        
+        /* ibo / UBFX */
+        if (strncmp(p, "ibo ", 4) == 0) {
+            int rd, rn, lsb, width;
+            if (sscanf(p + 4, "r%d, r%d, %d, %d", &rd, &rn, &lsb, &width) == 4) emit_ubfx(rd, rn, lsb, width);
+            continue;
+        }
+        
+        /* pir */
+        if (strncmp(p, "pir", 3) == 0) {
+            emit_exit();
+            break;
+        }
+    }
+    
+    if (jit_pos > 0 && jit_mem[jit_pos - 1] != 0xD4000001) {
+        emit_exit();
+    }
+    
+    fprintf(stderr, "[DEBUG] %zu opkoda\n", jit_pos);
+    
+    /* W^X: mprotect RX */
+    sys_call(226, (long)jit_mem, 16384, 5, 0, 0, 0);
+    
+    /* Izvrši */
+    typedef void (*fn_t)(void);
+    fn_t fn = (fn_t)jit_mem;
+    fn();
+    
+    return 0;
+}
+
+
+═══════════════════════════════════════════════════════════════════
+  DATOTEKA: glosator_v4.txt
+═══════════════════════════════════════════════════════════════════
+
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <sys/mman.h>
+
+#define SYS_write 64
+#define SYS_exit  93
+#define SYS_mmap  222
+
+static long sys_call(long n, long a, long b, long c, long d, long e, long f) {
+    register long x8 __asm__("x8") = n;
+    register long x0 __asm__("x0") = a;
+    register long x1 __asm__("x1") = b;
+    register long x2 __asm__("x2") = c;
+    register long x3 __asm__("x3") = d;
+    register long x4 __asm__("x4") = e;
+    register long x5 __asm__("x5") = f;
+    __asm__ volatile("svc 0" : "+r"(x0) : "r"(x8), "r"(x1), "r"(x2), "r"(x3), "r"(x4), "r"(x5));
+    return x0;
+}
+
+static uint32_t *jit_mem = NULL;
+static size_t jit_pos = 0;
+
+static void emit(uint32_t op) {
+    if (jit_mem && jit_pos < 4096) jit_mem[jit_pos++] = op;
+}
+
+/* ─── SVE EMIT FUNKCIJE ─── */
+static void emit_mov_imm(int rd, uint16_t imm) { emit(0xD2800000 | ((imm & 0xFFFF) << 5) | (rd & 0x1F)); }
+static void emit_orr(int rd, int rn, int rm)    { emit(0xAA000000 | ((rm & 0x1F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F)); }
+static void emit_eor(int rd, int rn, int rm)    { emit(0xCA000000 | ((rm & 0x1F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F)); }
+static void emit_and(int rd, int rn, int rm)    { emit(0x8A000000 | ((rm & 0x1F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F)); }
+static void emit_bic(int rd, int rn, int rm)    { emit(0x8A200000 | ((rm & 0x1F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F)); }
+static void emit_lsr_imm(int rd, int rn, int imm) { emit(0xD3400000 | ((imm & 0x3F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F)); }
+static void emit_lsl_imm(int rd, int rn, int imm) { emit(0xD3400000 | (0x3F << 16) | ((imm & 0x3F) << 16) | ((rn & 0x1F) << 5) | (rd & 0x1F)); }
+static void emit_ubfx(int rd, int rn, int lsb, int width) { emit(0x53000000 | (((width-1) & 0x3F) << 16) | ((lsb & 0x3F) << 10) | ((rn & 0x1F) << 5) | (rd & 0x1F)); }
+static void emit_strb(int rt, int rn, int off) { emit(0x39000000 | ((off & 0xFFF) << 10) | ((rn & 0x1F) << 5) | (rt & 0x1F)); }
+static void emit_ldrb(int rt, int rn, int off) { emit(0x39400000 | ((off & 0xFFF) << 10) | ((rn & 0x1F) << 5) | (rt & 0x1F)); }
+static void emit_cmp(int rn, int rm)            { emit(0xEB00001F | ((rm & 0x1F) << 16) | ((rn & 0x1F) << 5)); }
+static void emit_cbz(int rt, int off)           { emit(0xB4000000 | ((off & 0x7FFFF) << 5) | (rt & 0x1F)); }
+static void emit_cbnz(int rt, int off)          { emit(0xB5000000 | ((off & 0x7FFFF) << 5) | (rt & 0x1F)); }
+static void emit_mov_reg(int rd, int rn)        { emit(0xAA0003E0 | ((rn & 0x1F) << 16) | (rd & 0x1F)); }
+static void emit_nop(void)                       { emit(0xD503201F); }
+static void emit_ret(void)                       { emit(0xD65F03C0); }
+static void emit_sub_sp(uint16_t imm)            { emit(0xD10003FF | ((imm & 0xFFF) << 10)); }
+static void emit_add_x_sp(int rd)                { emit(0x91000000 | (31 << 5) | (rd & 0x1F)); }
+
+
+/* ─── 10 NOVIH MNEMONIKA ─── */
+
+/* CBZ Xn, offset — gjn */
+
+/* CBNZ Xn, offset — gnn */
+
+/* B.cond offset — guo (uvjet = 0 za sada) */
+static void emit_b_cond(int cond, int off) {
+    emit(0x54000000 | ((off & 0x7FFFF) << 5) | (cond & 0xF));
+}
+
+/* BL offset — ppo */
+static void emit_bl(int off) {
+    emit(0x94000000 | (off & 0x3FFFFFF));
+}
+
+/* B offset — pio */
+static void emit_b(int off) {
+    emit(0x14000000 | (off & 0x3FFFFFF));
+}
+
+/* RET — pps, pos */
+
+/* DSB SY — bar */
+static void emit_bar(void) {
+    emit(0xD5033F9F);
+}
+
+/* SVC #0 — spe */
+static void emit_svc(int sys_num) {
+    emit_mov_imm(8, sys_num);
+    emit(0xD4000001);
+}
+
+/* BLR Xn — ooi */
+static void emit_blr(int rn) {
+    emit(0xD63F0000 | ((rn & 0x1F) << 5));
+}
+
+/* STP XZR, XZR, [Xn] — pkm (simplificirano) */
+static void emit_memset(int rn) {
+    emit(0xA9007FE0 | ((rn & 0x1F) << 5));
+}
+
+/* ─── NASTAVAK ─── */
+
+/* NEON 128-bit V.16B */
+static void emit_vand(int vd, int vn, int vm) { emit(0x4E201C00 | ((vm & 0x1F) << 16) | ((vn & 0x1F) << 5) | (vd & 0x1F)); }
+static void emit_vorr(int vd, int vn, int vm) { emit(0x4EA01C00 | ((vm & 0x1F) << 16) | ((vn & 0x1F) << 5) | (vd & 0x1F)); }
+static void emit_vbic(int vd, int vn, int vm) { emit(0x4E601C00 | ((vm & 0x1F) << 16) | ((vn & 0x1F) << 5) | (vd & 0x1F)); }
+static void emit_veor(int vd, int vn, int vm) { emit(0x6E201C00 | ((vm & 0x1F) << 16) | ((vn & 0x1F) << 5) | (vd & 0x1F)); }
+
+static void emit_exit(void) {
+    emit(0xD2800000);
+    emit(0xD2800BA8);
+    emit(0xD4000001);
+}
+
+static void ispisi_string(const char *s) {
+    long len = 0;
+    while (s[len]) len++;
+    sys_call(SYS_write, 1, (long)s, len, 0, 0, 0);
+}
+
+/* Preskoči "v" ili "r" prefiks */
+static int parse_reg(const char *s) {
+    while (*s == 'r' || *s == 'v' || *s == 'R' || *s == 'V' || *s == ' ') s++;
+    return atoi(s);
+}
+
+int main(void) {
+    jit_mem = (uint32_t *)sys_call(SYS_mmap, 0, 16384, 3, 0x22, -1, 0);
+    if (!jit_mem || (long)jit_mem < 0) return 1;
+    
+    emit_sub_sp(512);
+    emit_add_x_sp(10);
+    
+    char linija[512];
+    while (fgets(linija, sizeof(linija), stdin)) {
+        char *p = linija;
+        while (*p == ' ' || *p == '\t') p++;
+        if (*p == '#' || *p == '\n' || *p == '\0') continue;
+        
+        /* mkm */
+        if (strncmp(p, "mkm", 3) == 0) continue;
+        
+        /* wrt */
+        if (strncmp(p, "wrt ", 4) == 0) {
+            char *q1 = strchr(p, '"');
+            char *q2 = q1 ? strchr(q1 + 1, '"') : NULL;
+            if (q1 && q2) {
+                *q2 = '\0';
+                for (char *c = q1 + 1; *c; c++) {
+                    if (*c == '\\' && *(c + 1) == 'n') { *c = '\n'; memmove(c + 1, c + 2, strlen(c + 2) + 1); }
+                }
+                ispisi_string(q1 + 1);
+            }
+            continue;
+        }
+        
+        /* nve */
+        if (strncmp(p, "nve ", 4) == 0) {
+            int rd, imm;
+            if (sscanf(p + 4, "r%d, %d", &rd, &imm) == 2) emit_mov_imm(rd, imm);
+            continue;
+        }
+        
+        /* pje */
+        if (strncmp(p, "pje ", 4) == 0) {
+            int rd, rn;
+            if (sscanf(p + 4, "r%d, r%d", &rd, &rn) == 2) emit_mov_reg(rd, rn);
+            continue;
+        }
+        
+        /* Skalarne skupovne */
+        if (strncmp(p, "uis ", 4) == 0) { int a,b,c; if (sscanf(p+4, "r%d, r%d, r%d", &a,&b,&c)==3) emit_orr(a,b,c); continue; }
+        if (strncmp(p, "srs ", 4) == 0) { int a,b,c; if (sscanf(p+4, "r%d, r%d, r%d", &a,&b,&c)==3) emit_eor(a,b,c); continue; }
+        if (strncmp(p, "pis ", 4) == 0) { int a,b,c; if (sscanf(p+4, "r%d, r%d, r%d", &a,&b,&c)==3) emit_and(a,b,c); continue; }
+        if (strncmp(p, "ris ", 4) == 0) { int a,b,c; if (sscanf(p+4, "r%d, r%d, r%d", &a,&b,&c)==3) emit_bic(a,b,c); continue; }
+        
+        /* NEON 128-bit */
+        if (strncmp(p, "vus ", 4) == 0) { int a,b,c; if (sscanf(p+4, "v%d, v%d, v%d", &a,&b,&c)==3) emit_vorr(a,b,c); continue; }
+        if (strncmp(p, "vss ", 4) == 0) { int a,b,c; if (sscanf(p+4, "v%d, v%d, v%d", &a,&b,&c)==3) emit_veor(a,b,c); continue; }
+        if (strncmp(p, "vps ", 4) == 0) { int a,b,c; if (sscanf(p+4, "v%d, v%d, v%d", &a,&b,&c)==3) emit_vand(a,b,c); continue; }
+        if (strncmp(p, "vrs ", 4) == 0) { int a,b,c; if (sscanf(p+4, "v%d, v%d, v%d", &a,&b,&c)==3) emit_vbic(a,b,c); continue; }
+        
+        /* Bit manipulacija */
+        if (strncmp(p, "dpo ", 4) == 0) { int a,b,c; if (sscanf(p+4, "r%d, r%d, %d", &a,&b,&c)==3) emit_lsr_imm(a,b,c); continue; }
+        if (strncmp(p, "lpo ", 4) == 0) { int a,b,c; if (sscanf(p+4, "r%d, r%d, %d", &a,&b,&c)==3) emit_lsl_imm(a,b,c); continue; }
+        if (strncmp(p, "ibo ", 4) == 0) { int a,b,c,d; if (sscanf(p+4, "r%d, r%d, %d, %d", &a,&b,&c,&d)==4) emit_ubfx(a,b,c,d); continue; }
+        
+        /* Memorija */
+        if (strncmp(p, "ssb ", 4) == 0) { int a,b,c; if (sscanf(p+4, "r%d, r%d, %d", &a,&b,&c)==3) emit_strb(a,b,c); continue; }
+        if (strncmp(p, "ujb ", 4) == 0) { int a,b,c; if (sscanf(p+4, "r%d, r%d, %d", &a,&b,&c)==3) emit_ldrb(a,b,c); continue; }
+        
+        /* Usporedba i grananje */
+        if (strncmp(p, "ume ", 4) == 0) { int a,b; if (sscanf(p+4, "r%d, r%d", &a,&b)==2) emit_cmp(a,b); continue; }
+        
+        /* NOP, RET */
+        if (strncmp(p, "nno", 3) == 0) { emit_nop(); continue; }
+        
+        /* pir */
+
+        /* Kontrola toka */
+        if (strncmp(p, "gjn ", 4) == 0) { int a, b; if (sscanf(p+4, "r%d, %d", &a, &b)==2) emit_cbz(a, b); continue; }
+        if (strncmp(p, "gnn ", 4) == 0) { int a, b; if (sscanf(p+4, "r%d, %d", &a, &b)==2) emit_cbnz(a, b); continue; }
+        if (strncmp(p, "guo ", 4) == 0) { int a, b; if (sscanf(p+4, "%d, %d", &a, &b)==2) emit_b_cond(a, b); continue; }
+        if (strncmp(p, "ppo ", 4) == 0) { int a; if (sscanf(p+4, "%d", &a)==1) emit_bl(a); continue; }
+        if (strncmp(p, "pio ", 4) == 0) { int a; if (sscanf(p+4, "%d", &a)==1) emit_b(a); continue; }
+
+        /* RET */
+        if (strncmp(p, "pps", 3) == 0) { emit_ret(); continue; }
+        if (strncmp(p, "pos", 3) == 0) { emit_ret(); continue; }
+
+        /* Barijera */
+        if (strncmp(p, "bar", 3) == 0) { emit_bar(); continue; }
+
+        /* Syscall */
+        if (strncmp(p, "spe ", 4) == 0) { int a; if (sscanf(p+4, "%d", &a)==1) emit_svc(a); continue; }
+
+        /* JIT */
+        if (strncmp(p, "ooi ", 4) == 0) { int a; if (sscanf(p+4, "r%d", &a)==1) emit_blr(a); continue; }
+
+        /* Memset */
+        if (strncmp(p, "pkm ", 4) == 0) { int a; if (sscanf(p+4, "r%d", &a)==1) emit_memset(a); continue; }
+
+        /* pir */
+        if (strncmp(p, "pir", 3) == 0) { emit_exit(); break; }
+    }
+    
+    if (jit_pos > 0 && jit_mem[jit_pos - 1] != 0xD4000001) emit_exit();
+    
+    fprintf(stderr, "[DEBUG] %zu opkoda\n", jit_pos);
+    sys_call(226, (long)jit_mem, 16384, 5, 0, 0, 0);
+    
+    typedef void (*fn_t)(void);
+    fn_t fn = (fn_t)jit_mem;
+    fn();
+    return 0;
+}
+
+═══════════════════════════════════════════════════════════════════
+  DATOTEKA: laloglosator_pijetao_v62.txt
+═══════════════════════════════════════════════════════════════════
+
+#include <stdint.h>
+#include <sys/mman.h>
+
+#define SYS_read      63
+#define SYS_write     64
+#define SYS_exit      93
+#define SYS_mmap      222
+#define SYS_mprotect  226
+
+#define EXEC_MEM_SIZE 65536
+
+static uint32_t *JIT_MEM = 0;
+static int JIT_PC = 0;
+
+__attribute__((no_builtin("strlen")))
+unsigned long strlen(const char *s) {
+    unsigned long l = 0; while (s[l]) l++; return l;
+}
+
+static long sys_call(long n, long a, long b, long c, long d, long e, long f) {
+    register long x8 __asm__("x8") = n, x0 __asm__("x0") = a, x1 __asm__("x1") = b;
+    register long x2 __asm__("x2") = c, x3 __asm__("x3") = d, x4 __asm__("x4") = e, x5 __asm__("x5") = f;
+    __asm__ volatile("svc 0" : "+r"(x0) : "r"(x8), "r"(x1), "r"(x2), "r"(x3), "r"(x4), "r"(x5));
+    return x0;
+}
+
+static void print(const char *s) { sys_call(SYS_write, 1, (long)s, strlen(s), 0, 0, 0); }
+
+static void print_num(uint64_t n) {
+    if(n == 0) { print("0"); return; }
+    char buf[24]; int i = 22; buf[23] = 0;
+    while(n > 0) { buf[i--] = '0' + (n % 10); n /= 10; }
+    print(&buf[i + 1]);
+}
+
+static void print_hex32(uint32_t val) {
+    const char hex[] = "0123456789ABCDEF";
+    char buf[9]; buf[8] = 0;
+    for (int i = 7; i >= 0; i--) { buf[i] = hex[val & 0xF]; val >>= 4; }
+    print(buf);
+}
+
+static int str_contains(const char *str, const char *sub) {
+    int i = 0;
+    while(str[i]) {
+        int j = 0;
+        while(sub[j] && str[i + j] == sub[j]) j++;
+        if(!sub[j]) return 1;
+        i++;
+    }
+    return 0;
+}
+
+static void init_jit(void) {
+    if (JIT_MEM != 0) return;
+    long addr = sys_call(SYS_mmap, 0, EXEC_MEM_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (addr > 0) JIT_MEM = (uint32_t *)addr;
+}
+
+static void emit_op(uint32_t op, const char *mnem) {
+    if (!JIT_MEM) init_jit();
+    JIT_MEM[JIT_PC++] = op;
+    print(" ⚡ [JIT EMIT] "); print(mnem); print(" ──► Opcode: 0x"); print_hex32(op); print("\n");
+}
+
+static void exec_jit(void) {
+    if (!JIT_MEM || JIT_PC == 0) return;
+
+    // Direct ISB synchronization (User-space safe)
+    __asm__ volatile("isb\n" ::: "memory");
+
+    print(" 🚀 Izvršavam generirani LSBU blok iz RAM-a...\n");
+    typedef uint64_t (*jit_func_t)(void);
+    jit_func_t fn = (jit_func_t)JIT_MEM;
+    uint64_t res = fn();
+    print(" ✅ [EXEC OK] Odaziv registra r0/x0 = "); print_num(res); print("\n\n");
+    JIT_PC = 0;
+}
+
+static void parse_lsbu_line(char *cmd) {
+    while(*cmd == ' ' || *cmd == '\t') cmd++;
+    if (*cmd == '#' || *cmd == 0) return;
+
+    if (str_contains(cmd, "pis")) emit_op(0x8A010002, "pis (A ∩ B)");
+    else if (str_contains(cmd, "uis")) emit_op(0xAA010002, "uis (A ∪ B)");
+    else if (str_contains(cmd, "ris")) emit_op(0x8A210002, "ris (A \\ B)");
+    else if (str_contains(cmd, "srs")) emit_op(0xCA010002, "srs (A △ B)");
+    else if (str_contains(cmd, "nve")) emit_op(0xD2800800, "nve (MOV r0, #0x40)");
+    else if (str_contains(cmd, "vps")) emit_op(0x4E211C02, "vps (VAND)");
+    else if (str_contains(cmd, "vus")) emit_op(0x4EA11C02, "vus (VORR)");
+    else if (str_contains(cmd, "vrs")) emit_op(0x4E611C02, "vrs (VBIC)");
+    else if (str_contains(cmd, "vss")) emit_op(0x6E211C02, "vss (VEOR)");
+    else if (str_contains(cmd, "nno")) emit_op(0xD503201F, "nno (NOP)");
+    else if (str_contains(cmd, "bar")) emit_op(0xD503201F, "bar (User-space NOP Barrier)");
+    else if (str_contains(cmd, "pir") || str_contains(cmd, "pps") || str_contains(cmd, "pos")) {
+        emit_op(0xD65F03C0, "pir (RET)");
+        exec_jit();
+    }
+}
+
+void _start(void) {
+    init_jit();
+    print("╔═══════════════════════════════════════════════════════════════╗\n");
+    print("║  NJM-OS :: PIJETAO v6.2 (STABILNI USER-SPACE JIT ENGINE)      ║\n");
+    print("╚═══════════════════════════════════════════════════════════════╝\n\n");
+
+    char buf[1024]; int len = 0;
+    char c;
+    while(1) {
+        long n = sys_call(SYS_read, 0, (long)&c, 1, 0, 0, 0);
+        if(n <= 0) break;
+        if(c == '\n' || c == '\r') {
+            buf[len] = 0;
+            if(len > 0) parse_lsbu_line(buf);
+            len = 0;
+        } else if(len < 1000) {
+            buf[len++] = c;
+        }
+    }
+    sys_call(SYS_exit, 0, 0, 0, 0, 0, 0);
+}
+
+
+═══════════════════════════════════════════════════════════════════
+  DATOTEKA: lsbu_hrvatski_assembler.txt
+═══════════════════════════════════════════════════════════════════
+
+# LSBU HRVATSKI ASSEMBLER — 26 mnemonika
+V0_INIT   = 06 00 00 00 2B 00 00 00 00 00 00 00 3F 26 2E 00
+CODE_SIZE = 04 00 00 00
+RET       = C0 03 5F D6
+
+ujb => 01 04 40 39
+udb => 02 08 40 39
+usb => 01 68 60 38
+ssb => 01 04 00 39
+ume => 1F 00 01 EB
+gjn => 00 00 00 B4
+gnn => 00 00 00 B5
+guo => 00 00 00 54
+pje => E2 03 01 AA
+ppo => 00 00 00 94
+pio => 00 00 00 14
+nno => 1F 20 03 D5
+bar => BF 3B 03 D5
+spe => 01 00 00 D4
+mkm => 00 08 80 D2
+pkm => 00 08 80 D2
+ooi => 00 00 3F D6
+pos => C0 03 5F D6
+lpo => 02 EC 7A D3
+dpo => 02 FC 7A D3
+ibo => 02 00 40 D3
+pis => 00 1C 21 4E
+uis => 00 1C A0 4E
+ris => 00 1C 61 4E
+srs => 00 1C 23 6E
+
+
+═══════════════════════════════════════════════════════════════════
+  DATOTEKA: parser.txt
+═══════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM-OS :: AUTARHIČNI NATIVNI LSBU-S PREVODITELJ (lsbu_parser.njm)
+#   Ispravljena registarska alokacija i EOF detekcija
+# ═══════════════════════════════════════════════════════════════════════════
+
+# 1. Alokacija radnog prostora na stogu (512 bajtova)
+mkm r10
+
+# Immena datoteka
+# r10 + 0  = "ulaz.njm\0"
+# r10 + 16 = "izlaz.elf\0"
+nve r2, 117; ssb r2, r10, 0   # 'u'
+nve r2, 108; ssb r2, r10, 1   # 'l'
+nve r2, 97;  ssb r2, r10, 2   # 'a'
+nve r2, 122; ssb r2, r10, 3   # 'z'
+nve r2, 46;  ssb r2, r10, 4   # '.'
+nve r2, 110; ssb r2, r10, 5   # 'n'
+nve r2, 106; ssb r2, r10, 6   # 'j'
+nve r2, 109; ssb r2, r10, 7   # 'm'
+nve r2, 0;   ssb r2, r10, 8   # \0
+
+nve r2, 105; ssb r2, r10, 16  # 'i'
+nve r2, 122; ssb r2, r10, 17  # 'z'
+nve r2, 108; ssb r2, r10, 18  # 'l'
+nve r2, 97;  ssb r2, r10, 19  # 'a'
+nve r2, 122; ssb r2, r10, 20  # 'z'
+nve r2, 46;  ssb r2, r10, 21  # '.'
+nve r2, 101; ssb r2, r10, 22  # 'e'
+nve r2, 108; ssb r2, r10, 23  # 'l'
+nve r2, 102; ssb r2, r10, 24  # 'f'
+nve r2, 0;   ssb r2, r10, 25  # \0
+
+# 2. Otvaranje "ulaz.njm" za čitanje (O_RDONLY = 0)
+nve r1, 0
+sab r1, r10, r1              # Adresa "ulaz.njm"
+opn r3, r1, 0, 0             # r3 = Ulazni File Descriptor
+
+# 3. Otvaranje "izlaz.elf" za pisanje (O_WRONLY|O_CREAT|O_TRUNC = 577, 0755)
+nve r1, 16
+sab r1, r10, r1              # Adresa "izlaz.elf"
+opn r4, r1, 577, 493         # r4 = Izlazni File Descriptor
+
+# 4. Zapisivanje ELF64 Magic Header-a (8 bajtova: \x7f ELF ...)
+nve r2, 127; ssb r2, r10, 32  # 0x7F
+nve r2, 69;  ssb r2, r10, 33  # 'E'
+nve r2, 76;  ssb r2, r10, 34  # 'L'
+nve r2, 70;  ssb r2, r10, 35  # 'F'
+nve r2, 2;   ssb r2, r10, 36  # ELFCLASS64
+nve r2, 1;   ssb r2, r10, 37  # ELFDATA2LSB
+nve r2, 1;   ssb r2, r10, 38  # EV_CURRENT
+nve r2, 0;   ssb r2, r10, 39  # ELFOSABI_NONE
+
+nve r1, 32
+sab r1, r10, r1
+wrt r4, r1, 8
+
+# 5. Glavna petlja parsiranja
+PETLJA_PARSERA:
+# Priprema registara za SYS_read (63): read(fd=r3, buf=r10+64, count=1)
+pje r0, r3                   # x0 = fd (r3)
+nve r1, 64
+sab r1, r10, r1              # x1 = buffer adresa
+nve r2, 1                    # x2 = count (1 bajt)
+nve r8, 63                   # x8 = SYS_read (63)
+spe 63                       # Sistemski poziv read
+
+# Ako read vrati <= 0 (x0 == 0 znači EOF), izađi iz petlje
+gjn r0, KRAJ_PARSERA
+
+# Učitavamo pročitani bajt u r5
+ujb r5, r10, 64
+
+# Provjera je li znak 's' (ASCII 115) -> Oduzimamo 115 od r5 u r6
+nve r7, 115
+odu r6, r5, r7
+# Ako r6 NIJE 0 (različito od 's'), preskoči emitiranje opkoda
+gnn r6, SKOK_SLJEDECI
+
+# Ako JEST 's', emitiramo AArch64 'ADD X0, X1, X2' opkod (4 bajta)
+nve r2, 0;   ssb r2, r10, 100
+nve r2, 0;   ssb r2, r10, 101
+nve r2, 2;   ssb r2, r10, 102
+nve r2, 139; ssb r2, r10, 103
+
+nve r1, 100
+sab r1, r10, r1
+wrt r4, r1, 4
+
+SKOK_SLJEDECI:
+pio PETLJA_PARSERA
+
+KRAJ_PARSERA:
+# Zatvaranje datoteka
+cls r3
+cls r4
+
+# Uredan izlaz
+pir
+
+
+═══════════════════════════════════════════════════════════════════
+  DATOTEKA: test_32.txt
+═══════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════
+# LSBU ISA v4 — TEST SVIH 32 MNEMONIKA
+# ═══════════════════════════════════════════════════════════════
+
+mkm r10
+wrt 1, "═══ LSBU ISA v4 — SVih 32 MNEMONIKA ═══\n"
+
+# ─── 1. OSNOVNI (4) ───
+nve r1, 12
+nve r2, 10
+pje r3, r1
+nno
+
+# ─── 2. SKALARNE SKUPOVNE (4) ───
+pis r4, r1, r2
+ris r5, r1, r2
+uis r6, r1, r2
+srs r7, r1, r2
+
+# ─── 3. BIT MANIPULACIJA (3) ───
+lpo r8, r1, 2
+dpo r9, r1, 2
+ibo r10, r1, 0, 4
+
+# ─── 4. MEMORIJA (3) ───
+ssb r4, r10, 0
+ujb r11, r10, 0
+pkm r10
+
+# ─── 5. USPOREDBA (1) ───
+ume r1, r2
+
+# ─── 6. KONTROLA TOKA (5) ───
+gjn r1, 0
+gnn r2, 0
+guo 0, 0
+ppo 0
+pio 0
+
+# ─── 7. POVRAT (2) ───
+pps
+pos
+
+# ─── 8. SPECIJALNI (3) ───
+bar
+spe 93
+ooi r1
+
+# ─── 9. SISTEMSKI (2) ───
+wrt 1, "════════════════════════════════════════\n"
+
+# ─── 10. IZLAZ (1) ───
+pir
+
+
+═══════════════════════════════════════════════════════════════════
+  DATOTEKA: test_safe.txt
+═══════════════════════════════════════════════════════════════════
+
+# LSBU ISA v4 — SIGURNI TEST (bez skokova na offset 0)
+mkm r10
+wrt 1, "═══ LSBU ISA v4 — SIGURNI TEST ═══\n"
+
+# ─── 1. OSNOVNI ───
+nve r1, 12
+nve r2, 10
+pje r3, r1
+nno
+
+# ─── 2. SKUPOVNE (skalarne) ───
+pis r4, r1, r2
+ris r5, r1, r2
+uis r6, r1, r2
+srs r7, r1, r2
+
+# ─── 3. BIT MANIPULACIJA ───
+lpo r8, r1, 2
+dpo r9, r1, 2
+ibo r10, r1, 0, 4
+
+# ─── 4. MEMORIJA ───
+ssb r4, r10, 0
+ujb r11, r10, 0
+
+# ─── 5. USPOREDBA ───
+ume r1, r2
+
+# ─── 6. SPECIJALNI ───
+nno
+bar
+
+# ─── 7. SISTEMSKI ───
+wrt 1, "════════════════════════════════════════\n"
+
+# ─── 8. IZLAZ ───
+pir
+

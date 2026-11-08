@@ -1,0 +1,6 @@
+# NJM-OS :: Storage Probe Script
+mkm r10
+nve r0, 0x2F    # ASCII '/'
+ssb r0, r10, 0
+nve r1, 1       # Pristupni status OK
+pir

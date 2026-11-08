@@ -1,0 +1,28 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   2. LSBU TRANSFORMER 24 (Nativni Bijektivni MID ↔ ID_24)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Ulazni MID objekt u registru r1
+nve r1, 41664               # MID maska ulaza
+
+# Korak 1: Kompresija MID u ID_24 (Izdvajanje bitne mase i leksičkog ranga)
+lpo r2, r1, 8               # Lijevi pomak (LSL)
+srs r2, r2, r1              # Transformacija simetričnom razlikom (EOR)
+nve r3, 65535               # 16-bitna maska za ID_24
+pis r2, r2, r3              # Presjek maske (AND) -> Generiran ID_24 u r2
+
+# Korak 2: Inverzna rekonstrukcija ID_24 -> MID
+srs r4, r2, r3              # Obnova simetrične razlike
+dpo r4, r4, 8               # Desni pomak (LSR)
+uis r4, r4, r1              # Rekonstrukcija ulaznog MID-a u r4
+
+# Korak 3: Dokaz Bijekcije (Provjera jednakosti)
+srs r5, r1, r4              # Provjera: ako su r1 i r4 jednaki, r5 = 0
+gnn r5, GRESKA_BIJEKCIJE     # Ako nije 0, doživljen je gubitak bitova
+
+# Bijekcija potvrdno valjana -> Čisti izlaz
+pir
+
+GRESKA_BIJEKCIJE:
+nve r0, 1                   # Status greške
+spe 93                      # SYS_exit

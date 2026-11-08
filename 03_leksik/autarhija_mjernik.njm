@@ -1,0 +1,31 @@
+# =============================================================================
+# NJM LALATOR :: AUTARHIJSKI SPREG NAD .LSBU MATRICOM
+# Hrvatski mnemonici -> Izravno JIT izvođenje na silikonu bez as/ld/clang
+# =============================================================================
+
+mkm r10
+
+wrt 1, "\n=========================================================\n"
+wrt 1, "⚡ NJM OS :: AUTARHIJSKO LALATOR MJERENJE (JIT SILIKON)\n"
+wrt 1, "   Izvor: Hrvatski mnemonici nad LSBU algebrom\n"
+wrt 1, "=========================================================\n\n"
+
+# 1. ENKODIRANJE (LSBU MRA registarsko slaganje 100.000 prolaza)
+wrt 1, "   ⚡ ENKODIRANJE (100k prolaza) : "
+pmu_start
+lsbu_mra r0, 100000
+pmu_stop r3
+wrt_num r3
+wrt 1, " ciklusa\n"
+
+# 2. DEKODIRANJE (1-taktni UBFX dohvat 100.000 prolaza)
+wrt 1, "   ⚡ DEKODIRANJE (100k prolaza) : "
+pmu_start
+lsbu_ubfx r0, 100000
+pmu_stop r4
+wrt_num r4
+wrt 1, " ciklusa\n"
+
+wrt 1, "=========================================================\n\n"
+
+pir

@@ -1,0 +1,8 @@
+#!/data/data/com.termux/files/usr/bin/bash
+EXEC_BIN="$HOME/njm_2_ekosustav_01/bst_metabolizator/metabolizator_ID"
+if [ -x "$EXEC_BIN" ]; then
+    exec "$EXEC_BIN" "$@"
+else
+    echo "Greška: Izvršni binarac $EXEC_BIN nije pronađen!" >&2
+    exit 1
+fi

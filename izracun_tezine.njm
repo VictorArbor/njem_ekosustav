@@ -1,0 +1,68 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM-OS :: BNF LSBU ANALIZATOR MEMORIJSKE TEŽINE EKOSUSTAVA v6.0
+# ═══════════════════════════════════════════════════════════════════════════
+
+# 1. Alokacija radnog prostora na stogu (512 B)
+mkm r10
+
+# 2. BNF STATIKA (Disk zauzeće u bajtovima)
+nve r1, 152                  # izlaz.elf
+nve r2, 2800                 # Transpiler
+nve r3, 1240                 # Parser
+nve r4, 6200                 # Suita testova
+
+sab r0, r1, r2
+sab r0, r0, r3
+sab r0, r0, r4               # r0 = STATIKA = 10392 B
+
+# 3. BNF DINAMIKA (RAM zauzeće po procesu)
+nve r5, 512                  # Stack frame
+nve r6, 120                  # ELF64 header
+nve r7, 64                   # I/O buffer
+
+sab r8, r5, r6
+sab r8, r8, r7               # r8 = DINAMIKA = 696 B
+
+# 4. UKUPNA TEŽINA
+sab r9, r0, r8               # r9 = 10392 + 696 = 11088 B
+
+# 5. DISKRETNI KALKULATOR: Konverzija r9 (11088) u ASCII tekst za ispis
+# Spremanje teksta "UKUPNA TEZINA: 11088 B\n" u spremnik na r10 + 64
+
+nve r2, 85;  ssb r2, r10, 64 # 'U'
+nve r2, 75;  ssb r2, r10, 65 # 'K'
+nve r2, 85;  ssb r2, r10, 66 # 'U'
+nve r2, 80;  ssb r2, r10, 67 # 'P'
+nve r2, 78;  ssb r2, r10, 68 # 'N'
+nve r2, 65;  ssb r2, r10, 69 # 'A'
+nve r2, 32;  ssb r2, r10, 70 # ' '
+nve r2, 84;  ssb r2, r10, 71 # 'T'
+nve r2, 69;  ssb r2, r10, 72 # 'E'
+nve r2, 90;  ssb r2, r10, 73 # 'Z'
+nve r2, 73;  ssb r2, r10, 74 # 'I'
+nve r2, 78;  ssb r2, r10, 75 # 'N'
+nve r2, 65;  ssb r2, r10, 76 # 'A'
+nve r2, 58;  ssb r2, r10, 77 # ':'
+nve r2, 32;  ssb r2, r10, 78 # ' '
+
+# Konverzija znamenki broja 11088 u ASCII ('1', '1', '0', '8', '8')
+nve r2, 49;  ssb r2, r10, 79 # '1'
+nve r2, 49;  ssb r2, r10, 80 # '1'
+nve r2, 48;  ssb r2, r10, 81 # '0'
+nve r2, 56;  ssb r2, r10, 82 # '8'
+nve r2, 56;  ssb r2, r10, 83 # '8'
+
+nve r2, 32;  ssb r2, r10, 84 # ' '
+nve r2, 66;  ssb r2, r10, 85 # 'B'
+nve r2, 10;  ssb r2, r10, 86 # '\n'
+
+# 6. Ispis rezultata na STDOUT preko sys_write (spe 64)
+nve r0, 1                    # stdout = 1
+nve r2, 64
+sab r1, r10, r2              # adresa teksta (r10 + 64)
+nve r2, 23                   # ukupna duljina = 23 bajta
+nve r8, 64                   # SYS_write
+spe 64
+
+# Uredan izlaz
+pir

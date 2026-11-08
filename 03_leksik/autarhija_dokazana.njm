@@ -1,0 +1,4 @@
+mkm r10
+sab r1, r10, 0
+wrt 1, r1, 30
+pir

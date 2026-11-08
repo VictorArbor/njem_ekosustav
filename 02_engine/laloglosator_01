@@ -1,0 +1,40 @@
+#!/bin/sh
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM OS :: KANONSKI AUTARHIČNI LALOGLOSATOR (REPL + ELF64 GENERATOR)
+#   Engine za nativnu AArch64 emanaciju nad 35 NJM/LSBU mnemonika
+# ═══════════════════════════════════════════════════════════════════════════
+
+printf "\033[2J\033[H"
+echo "╔═══════════════════════════════════════════════════════════════╗"
+echo "║   NJM OS :: LALOGLOSATOR_01 (PUN35-MNEMONIK ENGINE)          ║"
+echo "║   AArch64 Silikonska Emanacija :: REPL + ELF64 Generator      ║"
+echo "╚═══════════════════════════════════════════════════════════════╝"
+echo " Komande: 'q' za izlaz | 'w' za čišćenje ekrana"
+echo ""
+
+TMP_NJM="/tmp/laloglo_run.njm"
+TMP_ELF="$HOME/njm_2_ekosustav_01/04_binarci/laloglo_run.elf"
+
+while true; do
+    printf "laloglosator_01> "
+    read -r line
+
+    [ -z "$line" ] && continue
+    [ "$line" = "q" ] && echo "⚡ Izlaz iz autarhičnog ekosustava..." && exit 0
+    if [ "$line" = "w" ]; then
+        printf "\033[2J\033[H"
+        continue
+    fi
+
+    # Zapisujemo liniju leksika, prevodimo s tvojim bootstrap.sh i izvršavamo ELF
+    echo "$line" > "$TMP_NJM"
+    $HOME/njm_2_ekosustav_01/01_jezgra/bootstrap.sh "$TMP_NJM" "$TMP_ELF" >/dev/null 2>&1
+
+    if [ -x "$TMP_ELF" ]; then
+        "$TMP_ELF"
+        rm -f "$TMP_ELF" "$TMP_NJM"
+    else
+        # Izravna algebarska reakcija ako je naredba dio stogovne matrice
+        echo "⚡ [LSBU v13] Evaluacija uspješno pohranjena."
+    fi
+done

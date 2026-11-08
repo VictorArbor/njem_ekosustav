@@ -1,0 +1,12 @@
+# =============================================================================
+# LSBU ISA :: DOKAZ JIT IZVRŠAVANJA
+# =============================================================================
+
+0x18 mkm
+0x09 nve r0, 0x2B           # Postavi MID u X0
+0x07 ibo r5, r0, 48, 16     # UBFX X5, X0, #48, #16
+0x06 dpo r3, r5, 11         # LSR X3, X5, #11
+0x01 pis r4, r5, 0x7FF      # AND X4, X5, #0x7FF
+0x1a spe 64                 # SVC #0 (write)
+0x26 ooi                    # JIT izvršavanje
+0x1b pir                    # Povratak

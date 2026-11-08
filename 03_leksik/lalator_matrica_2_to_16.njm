@@ -1,0 +1,26 @@
+# =============================================================================
+# LALATOR :: MATRICA MJERENJA TAKTOVA (2 DO 16 FONEMA)
+# SVOJSTVO: Spojeni CTRL topološki blok (m.p || f.u) - 1-taktni UBFX dohvat
+# =============================================================================
+
+mkm r10
+pmu_start
+
+# Matrica ispitnih uzoraka (2 do 16 hrvatskih fonema)
+test_fonem 2,  "ja"
+test_fonem 3,  "oko"
+test_fonem 4,  "voda"
+test_fonem 5,  "trava"
+test_fonem 6,  "zemlja"
+test_fonem 7,  "svjetlo"
+test_fonem 8,  "kretanje"
+test_fonem 9,  "prijatelj"
+test_fonem 10, "inteligencija"
+test_fonem 11, "morfologija"
+test_fonem 12, "transpilerija"
+test_fonem 13, "reverzibilnost"
+test_fonem 14, "metabolizacija"
+test_fonem 15, "samoreprodukcija"
+test_fonem 16, "kautarhičnostika"
+
+pir

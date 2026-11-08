@@ -1,0 +1,11 @@
+# BST ISA CANONICAL SPECIFICATION v1.0
+V_N   = 0x06
+V_FU  = 0x0000002B
+V_MU  = 0x00000000003F262E
+
+V0 = vus( vus(V_N, V_FU), V_MU )
+V1 = vps( V0, 0x0000002B )
+V2 = vss( V1, 0x0000003F )
+
+ooi( V2 )
+pir( V2 )

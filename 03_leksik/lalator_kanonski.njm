@@ -1,0 +1,18 @@
+# =============================================================================
+# LALATOR LEKSIK :: KANONSKI LSBU MNEMONICI
+# Nema heksadekada, nema izračunatih bitova — samo čista operativna sintaksa.
+# =============================================================================
+
+mkm r10
+
+# Aktivacija generatora binarnih uzoraka za fonemske matrice
+lsbu_generiraj_uzorak r1, "morfologija"
+nve r2, 11
+
+# Algebarsko spajanje u CTRL registarski blok (m.p || f.u)
+enc_ctrl r0, r1, r2
+
+# 1-taktni UBFX dohvat i razdvajanje na silikonu
+dec_ctrl r3, r4, r0
+
+pir

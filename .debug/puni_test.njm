@@ -1,0 +1,24 @@
+mkm r10
+wrt 1, "╔═══════════════════════════════╗\n"
+wrt 1, "║   LSBU ISA v4 :: PUNI TEST    ║\n"
+wrt 1, "╚═══════════════════════════════╝\n"
+
+nve r1, 255
+nve r2, 170
+pis r3, r1, r2
+ris r4, r1, r2
+uis r5, r1, r2
+srs r6, r1, r2
+
+lpo r7, r1, 2
+dpo r8, r1, 2
+ibo r9, r1, 0, 4
+pje r10, r1
+ume r1, r2
+nno
+bar
+
+wrt 1, "═══════════════════════════════\n"
+wrt 1, "  SVE OPERACIJE USPJEŠNO       \n"
+wrt 1, "═══════════════════════════════\n"
+pir

@@ -1,0 +1,7 @@
+mkm r10
+wrt 1, "Test 1\n"
+nve r1, 42
+nve r2, 7
+uis r0, r1, r2
+wrt 1, "Test 2\n"
+pir

@@ -1,0 +1,6 @@
+mkm r10
+nve r1, 10
+nve r2, 20
+sab r3, r1, r2
+uis r4, r3, r1
+pir

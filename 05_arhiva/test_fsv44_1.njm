@@ -1,0 +1,66 @@
+# 1. Alokacija i automatska zaštita stoga u r10
+mkm r10
+
+# 2. Pisanje "autarhija.txt\0" u [r10 + 0..13]
+nve r2, 97
+ssb r2, r10, 0
+nve r2, 117
+ssb r2, r10, 1
+nve r2, 116
+ssb r2, r10, 2
+nve r2, 97
+ssb r2, r10, 3
+nve r2, 114
+ssb r2, r10, 4
+nve r2, 104
+ssb r2, r10, 5
+nve r2, 105
+ssb r2, r10, 6
+nve r2, 106
+ssb r2, r10, 7
+nve r2, 97
+ssb r2, r10, 8
+nve r2, 46
+ssb r2, r10, 9
+nve r2, 116
+ssb r2, r10, 10
+nve r2, 120
+ssb r2, r10, 11
+nve r2, 116
+ssb r2, r10, 12
+nve r2, 0
+ssb r2, r10, 13
+
+# 3. Pisanje slova 'A' (65) na pomak [r10 + 32]
+nve r3, 65
+ssb r3, r10, 32
+
+# 4. Otvaranje datoteke (O_WRONLY|O_CREAT|O_TRUNC = 0x241 = 577, mode = 0644 = 420)
+nve r2, 0x241
+opn r1, r10, r2, 420
+
+# 5. Adresa r4 = r10 + 32
+nve r5, 32
+sab r4, r10, r5
+nve r6, 1
+wrt r1, r4, r6
+
+# 6. Zatvaranje
+cls r1
+
+# 7. Otvaranje za čitanje (O_RDONLY = 0)
+nve r2, 0
+opn r1, r10, r2, 0
+
+# 8. Čitanje u pomak 64 (r4 = r10 + 64)
+nve r5, 64
+sab r4, r10, r5
+nve r6, 1
+rdl r1, r4, r6
+
+# 9. Zatvaranje
+cls r1
+
+# 10. Povratak pročitanog znaka u r0
+ujb r0, r4, 0
+pir

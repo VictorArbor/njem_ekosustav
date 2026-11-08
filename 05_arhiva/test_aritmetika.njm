@@ -1,0 +1,4 @@
+nve r1, 10
+nve r2, 15
+sab r0, r1, r2
+pir

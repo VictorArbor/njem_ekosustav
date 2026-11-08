@@ -1,0 +1,64 @@
+# 1. Inicijalizacija scratchpada u X10
+mkm r10
+
+# 2. Upis naziva "autarhija.txt\0" u [X10 + 0..13]
+nve r2, 97    # 'a'
+ssb r2, r10, 0
+nve r2, 117   # 'u'
+ssb r2, r10, 1
+nve r2, 116   # 't'
+ssb r2, r10, 2
+nve r2, 97    # 'a'
+ssb r2, r10, 3
+nve r2, 114   # 'r'
+ssb r2, r10, 4
+nve r2, 104   # 'h'
+ssb r2, r10, 5
+nve r2, 105   # 'i'
+ssb r2, r10, 6
+nve r2, 106   # 'j'
+ssb r2, r10, 7
+nve r2, 97    # 'a'
+ssb r2, r10, 8
+nve r2, 46    # '.'
+ssb r2, r10, 9
+nve r2, 116   # 't'
+ssb r2, r10, 10
+nve r2, 120   # 'x'
+ssb r2, r10, 11
+nve r2, 116   # 't'
+ssb r2, r10, 12
+nve r2, 0     # \0
+ssb r2, r10, 13
+
+# 3. Upis znaka 'A' (65) na pomak [X10 + 16]
+nve r3, 65
+ssb r3, r10, 16
+
+# 4. Otvaranje datoteke za zapis (O_WRONLY|O_CREAT|O_TRUNC = 577, mode = 420)
+nve r2, 577
+opn r1, r10, r2, 420
+
+# 5. Zapisivanje 1 bajta iz [X10 + 16] preko r4
+mkm r4
+nve r5, 16
+sab r4, r10, r5
+nve r6, 1
+wrt r1, r4, r6
+
+# 6. Zatvaranje datoteke
+cls r1
+
+# 7. Otvaranje za čitanje (O_RDONLY = 0)
+nve r2, 0
+opn r1, r10, r2, 0
+
+# 8. Čitanje u [X10 + 32]
+nve r5, 32
+sab r4, r10, r5
+rdl r1, r4, r6
+
+# 9. Zatvaranje i dohvaćanje ASCII znaka 'A' (65) u r0
+cls r1
+ujb r0, r4, 0
+pir

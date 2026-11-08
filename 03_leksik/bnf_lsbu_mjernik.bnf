@@ -1,0 +1,15 @@
+;; =============================================================================
+;; BNF-LSBU SPECIFIKACIJA: PROTOKOL ZA DISKRETNO MJERENJE TAKTOVA (v13.0)
+;; =============================================================================
+<lsbu_mjernik>        ::= <alokacija_stoga> <inicijalizacija_pmu> <testna_petlja> <emanacija_rezultata> <izlaz>
+
+<alokacija_stoga>     ::= "mkm r10"
+<inicijalizacija_pmu> ::= "pmu_start"
+
+<testna_petlja>       ::= <pretvorba_enc> <ocitanje_pmu> <pretvorba_dec> <ocitanje_pmu>
+<pretvorba_enc>       ::= "enc" <razmak> <registar_ulaz> "," <razmak> <registar_mid>
+<pretvorba_dec>       ::= "dec" <razmak> <registar_mid> "," <razmak> <registar_izlaz>
+
+<ocitanje_pmu>        ::= "pmu_read" <razmak> <registar_taktova>
+<emanacija_rezultata> ::= "wrt_num" <razmak> <registar_taktova>
+<izlaz>               ::= "pir"

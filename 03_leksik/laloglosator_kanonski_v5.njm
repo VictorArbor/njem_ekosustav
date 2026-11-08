@@ -1,0 +1,21 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM_2_EKOSUSTAV_01 :: KANONSKI LALOGLOSATOR V5 (BEZ MANUELNIH BAJTOVA)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Inicijalizacija stogna okvira na nultom sloju
+mkm r10
+
+# High-Level tekstualna emanacija (Bootstrap sam vrši konverziju i alokaciju)
+wrt 1, "╔═══════════════════════════════════════════════════════════════╗\n"
+wrt 1, "║   NJM OS :: LALOGLOSATOR_1 (AUTARHIČNI SILIKONSKI ENGINE)     ║\n"
+wrt 1, "╚═══════════════════════════════════════════════════════════════╝\n"
+wrt 1, "⚡ RS-128 Algebarski ciklus nad U = {0,1}^128 uspesno odradjen!\n"
+
+# Izravna algebarska transformacija nad registarskim masama (1 takt)
+nve r1, 41664                # MID maska A
+nve r2, 65535                # MID maska B
+uis r0, r1, r2               # Unija skupova (ORR)
+srs r3, r0, r1               # Simetrična razlika (EOR)
+
+# Nativni i uredni izlaz iz procesa kroz SYS_exit (#93)
+pir

@@ -1,0 +1,6 @@
+mkm r10
+lsbu_generiraj_uzorak r1, "morfologija"
+nve r2, 11
+enc_ctrl r0, r1, r2
+dec_ctrl r3, r4, r0
+pir

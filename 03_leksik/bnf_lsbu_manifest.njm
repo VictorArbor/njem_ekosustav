@@ -1,0 +1,12 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#   NJM_2_EKOSUSTAV_01 :: FORMALNI BNF-LSBU MANIFEST ENGINE
+#   Sintaksa: BNF-LSBU v14.0 (AArch64 RS-128 Silikonski Agregat)
+# ═══════════════════════════════════════════════════════════════════════════
+
+<inst_mkm> ::= mkm r10
+<inst_nve> ::= nve r1, 0xA2C0
+<inst_nve> ::= nve r2, 0xFFFF
+<inst_uis> ::= uis r0, r1, r2
+<inst_srs> ::= srs r3, r0, r1
+<inst_spe> ::= spe 93
+<inst_pir> ::= pir

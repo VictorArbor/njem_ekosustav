@@ -1,0 +1,7 @@
+<lalator_program> ::= <alokacija> <emanacija_zaglavlje> <emanacija_poruka> <emanacija_dno> <izlaz>
+
+<alokacija>           ::= mkm r10
+<emanacija_zaglavlje> ::= wrt 1, "╔═══════════════════════════════════════════════════════════════╗\n"
+<emanacija_poruka>    ::= wrt 1, "║   LALATOR JE IZGRADIO GLOSATOR :: AUTARHIJA POSTIGNUTA!       ║\n"
+<emanacija_dno>       ::= wrt 1, "╚═══════════════════════════════════════════════════════════════╝\n"
+<izlaz>               ::= pir

@@ -1,0 +1,20 @@
+# LSBU LOADER — čita hrvatski assembler i gradi dispatch tablicu
+# Ovo je LSBU-S program koji se izvršava na laloglosatoru_1
+
+# Inicijalizacija
+nve r0, 0x1000          # adresa .njm tabele
+nve r1, 0x2000          # adresa dispatch tablice
+nve r2, 0x00            # indeks u tabeli
+nve r3, 0x00            # trenutni bajt
+
+# Glavna petlja — čita .njm i gradi dispatch
+PETLJA:
+    ujb r3, [r0 + r2]        # r3 := tabela[r2]
+    ume r3, 0x00             # je li kraj?
+    gjn KRAJ                 # ako da, izađi
+    # ... (dispatch logika)
+    pir
+
+KRAJ:
+    nve r0, 0x00
+    pir

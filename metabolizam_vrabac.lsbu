@@ -1,0 +1,14 @@
+# LSBU v6 CANONICAL SPECIFICATION — "vrabac"
+# 1. Konstrukcija ulaznog skupovnog identiteta (MID)
+V_N   = 0x06000000000000000000000000000000
+V_FU  = 0x0000002B000000000000000000000000
+V_MU  = 0x00000000003F262E0000000000000000
+
+V0    = V_N ∪ V_FU ∪ V_MU
+
+# 2. Algebarski metabolizam (Čiste $O(1)$ skupovne operacije)
+V1    = V0 ∩ 0x0000002B000000000000000000000000
+V2    = V1 Δ 0x0000003F000000000000000000000000
+
+# 3. Emanacija na siliciju
+⇒ V2

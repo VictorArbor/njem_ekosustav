@@ -1,0 +1,7 @@
+mkm r10
+nve r0, 0x41
+nve r1, 0x20
+uis r0, r0, r1
+ssb r0, r10, 0
+ujb r9, r10, 0
+pir

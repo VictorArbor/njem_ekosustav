@@ -1,0 +1,20 @@
+# 1. Alokacija 128-bitnog V0 registra za N=20 fonema
+V_N   = vps ( X0 , X1 )
+V_FU  = vss ( X2 , X3 )
+V_MU  = vrs ( X4 , X5 )
+V_MID = vus ( vus ( V_N , V_FU ) , V_MU )
+
+# 2. Vokalno-morfološka SIMD korigirajuća rešetka u V-prostoru
+V0_TR = vss ( V_MID , X12 )
+
+# 3. AUTONOMNI JIT EXECUTE OKIDAČ OVER AArch64 SILICIJ (blr x6)
+ooi ( V0_TR )
+
+# 4. Invarijantni povratak izdvajanja projekcija
+REC_N  = vps ( V0_TR , X10 )
+REC_FU = vss ( V0_TR , X11 )
+REC_MU = vrs ( V0_TR , X12 )
+
+pir ( REC_N )
+pir ( REC_FU )
+pir ( REC_MU )

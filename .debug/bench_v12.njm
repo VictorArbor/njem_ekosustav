@@ -1,0 +1,8 @@
+mkm r10
+vri r20
+nve r0, 1000
+LOOP:
+odu r0, r0, 1
+gnn r0, LOOP
+vri r21
+pir

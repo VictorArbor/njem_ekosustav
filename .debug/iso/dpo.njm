@@ -1,0 +1,4 @@
+mkm r10
+nve r1, 12
+dpo r9, r1, 2
+pir

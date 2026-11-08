@@ -1,0 +1,23 @@
+# ═══════════════════════════════════════════════════════════════
+# BST LSBU v1.0 :: HIJERARHIJA FONEMA, SLOGOVA I LEMA
+# Riječ (Nadskup) ⊃ Slog (Skup) ⊃ Fonem (Podskup)
+# ═══════════════════════════════════════════════════════════════
+
+# 1. BAZNI FONEMSKI PODSKUPOVI (F)
+FONEM_A   = 0x0000000000000061
+FONEM_E   = 0x0000000000000065
+FONEM_I   = 0x0000000000000069
+FONEM_O   = 0x000000000000006F
+FONEM_U   = 0x0000000000000075
+FONEM_M   = 0x000000000000006D
+
+# 2. SLOGOVI I FLEKSIJSKI SKUPOVI (S = F_1 ∪ F_2)
+SLOG_OM   = FONEM_O ∪ FONEM_M
+SLOG_AMA  = FONEM_A ∪ FONEM_M ∪ FONEM_A
+
+# 3. KORPUS LEKSEMA KOJI DIELE ISTI INVARIJANTNI PODSKUP
+# Laloglosatoru se predaju svi leksemi za determinističku ekstrakciju
+kuća kuće kući kuću kućom kućama
+vrabac vrapca vrapcu vrapče vrapcem vrapci vrapaca vrapcima
+grad grada gradu gradom gradovi gradova gradovima
+pjevati pjevam pjevaš pjeva pjevamo pjevate pjevaju

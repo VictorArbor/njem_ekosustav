@@ -1,0 +1,4 @@
+mkm r10
+wrt 1, "Pozdrav iz NJM!\n"
+wrt 1, "Ovo je test.\n"
+pir

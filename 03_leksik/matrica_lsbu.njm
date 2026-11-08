@@ -1,0 +1,17 @@
+# =============================================================================
+# LALATOR LEKSIK :: DIREKTNA LSBU ALGEBRA (BEZ C RUNTIMEA)
+# Topologija: Spojeni CTRL (m.p || f.u) na AArch64 silikonu
+# =============================================================================
+
+mkm r10
+
+# Unija (uis) i Simetrična razlika (srs) direktno nad registrima
+nve r1, 0x5B28
+nve r2, 0x07FF
+
+# LSBU registarska transformacija
+uis r3, r1, r2    # Unija / ORR
+srs r4, r1, r2    # Simetrična razlika / EOR
+
+# Nativni izlaz iz procesa
+pir

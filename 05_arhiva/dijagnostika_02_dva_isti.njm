@@ -1,0 +1,27 @@
+mkm r10
+nve r2, 97
+ssb r2, r10, 0
+nve r2, 46
+ssb r2, r10, 1
+nve r2, 116
+ssb r2, r10, 2
+nve r2, 120
+ssb r2, r10, 3
+nve r2, 116
+ssb r2, r10, 4
+nve r2, 0
+ssb r2, r10, 5
+nve r3, 65
+ssb r3, r10, 32
+nve r2, 577
+opn r1, r10, r2, 420
+nve r5, 32
+sab r4, r10, r5
+nve r6, 1
+wrt r1, r4, r6
+nve r3, 66
+ssb r3, r10, 32
+wrt r1, r4, r6
+cls r1
+nve r0, 0
+pir

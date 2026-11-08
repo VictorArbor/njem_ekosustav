@@ -1,0 +1,12 @@
+mkm r10
+nve r1, 100
+nve r2, 200
+nve r3, 300
+sab r4, r1, r2
+mno r5, r1, r2
+ssb r1, r10, 0
+ssb r2, r10, 1
+ssb r3, r10, 2
+ujb r6, r10, 0
+ujb r7, r10, 1
+pir

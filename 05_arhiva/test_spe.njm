@@ -1,0 +1,23 @@
+# Test izravnog sistemskog poziva
+mkm r10
+
+# Priprema teksta "SPE_OK\n"
+nve r2, 83;  ssb r2, r10, 32  # 'S'
+nve r2, 80;  ssb r2, r10, 33  # 'P'
+nve r2, 69;  ssb r2, r10, 34  # 'E'
+nve r2, 95;  ssb r2, r10, 35  # '_'
+nve r2, 79;  ssb r2, r10, 36  # 'O'
+nve r2, 75;  ssb r2, r10, 37  # 'K'
+nve r2, 10;  ssb r2, r10, 38  # '\n'
+
+# Priprema registara za write(stdout=1, buf, count=7)
+nve r0, 1
+nve r8, 32
+sab r1, r10, r8
+nve r2, 7
+
+# Poziv SYS_write (64) preko spe mnemonika
+nve r8, 64
+spe 64
+
+pir

@@ -1,0 +1,20 @@
+# =============================================================================
+# LALATOR LEKSIK :: LALOGLOSATOR MATRICA (BEZ C-a I RUČNOG ASEMBLE_RA)
+# LSBU Skupovna Algebra nad 64-bitnim MID registrima (CTRL topologija)
+# =============================================================================
+
+mkm r10
+
+# A. Nabijanje ulazne riječi "morfologija" (11 fonema) i spajanje u CTRL
+# r1 = fonemski uzorak (f.u), r2 = duljina (m.p = 11)
+nve r1, 0x0000000000D8F349
+nve r2, 11
+
+# B. Enkodiranje: Spajanje m.p || f.u u gornji CTRL blok registra r0 (MID)
+enc_ctrl r0, r1, r2
+
+# C. Dekodiranje: 1-taktni dohvat (UBFX) i razdvajanje na r3 (m.p) i r4 (f.u)
+dec_ctrl r3, r4, r0
+
+# Nativni izlaz i egestija izmjerenih taktova
+pir
