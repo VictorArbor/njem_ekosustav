@@ -1,12 +1,12 @@
 =================================================================
   ZAJEDNICA RUKE — POTVRDA O ZAPRIMANJU PODNESKA (e-Potvrda)
 =================================================================
-Broj akta / Zapisa:  MG/PODNESAK-001-2026
+Broj akta / Zapisa:  MG/KANGOO-ZAVRCNI-2026
 Kontrolni broj:      589F-1771
-Vremenska oznaka:    2026-11-08T06:33:52Z (UTC)
+Vremenska oznaka:    2026-11-08T07:39:38Z (UTC)
 SHA-256 Podneska:    589f17718f9849ecc358e21dd50b38dc13e9b906c8ea4a5a65237caa17e8c2ce
 Pošiljatelj:         Michael Golubičić (Zajednica RUKE)
 Primatelj:           Općinski sud u Vinkovcima
 Izdavatelj potvrde:  Udruga ZAJEDNICA RUKE (OIB: 64517735227)
-Verifikacijski URL:  https://victorarbor.github.io/njem_ekosustav/index.html?broj=MG/PODNESAK-001-2026&kod=589F-1771
+Verifikacijski URL:  https://victorarbor.github.io/njem_ekosustav/index.html?broj=MG/KANGOO-ZAVRCNI-2026&kod=589F-1771
 =================================================================
