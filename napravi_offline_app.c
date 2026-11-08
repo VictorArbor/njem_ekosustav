@@ -10,6 +10,8 @@
 /* ==== Tri odvojena vizualna identiteta Zajednice RUKE ==== */
 /* 1. Službeni grb Zajednice RUKE (Verifikator) */
 /* ==== Tri odvojena vizualna identiteta Zajednice RUKE ==== */
+/* ==== Tri odvojena vizualna identiteta Zajednice RUKE ==== */
+/* 1. Službeni grb (Verifikator) */
 void ispisi_grb_zajednica(FILE *fhtml) {
     fprintf(fhtml, "    <div class=\"logo-header\">\n");
     fprintf(fhtml, "        <img src=\"logo.png\" alt=\"Zajednica RUKE Grb\">\n");
@@ -18,6 +20,7 @@ void ispisi_grb_zajednica(FILE *fhtml) {
     fprintf(fhtml, "    </div>\n");
 }
 
+/* 2. Svečani Orden (Članska Prijava / PIN) */
 void ispisi_grb_orden(FILE *fhtml) {
     fprintf(fhtml, "    <div class=\"logo-header\">\n");
     fprintf(fhtml, "        <img src=\"logo_orden.jpg\" alt=\"Svečani Orden Zajednice RUKE\">\n");
@@ -26,6 +29,7 @@ void ispisi_grb_orden(FILE *fhtml) {
     fprintf(fhtml, "    </div>\n");
 }
 
+/* 3. BST Pečat Tetramorfa (Pretinac & Forma) */
 void ispisi_grb_bst(FILE *fhtml) {
     fprintf(fhtml, "    <div class=\"logo-header\">\n");
     fprintf(fhtml, "        <img src=\"logo_bst.jpg\" alt=\"BST Hipostazološki Pečat\" style=\"width: 90px; height: 90px; border-radius: 50%%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: cover; display: block; margin: 0 auto; border: 3px solid #f39c12;\">\n");
@@ -106,6 +110,7 @@ int main(void) {
     // Kartica 2: Članska Prijava
     fprintf(fhtml, "<div id=\"authCard\" class=\"card-auth\">\n");
     ispisi_grb_bst(fhtml);
+    ispisi_grb_orden(fhtml);
     fprintf(fhtml, "    <div class=\"subtitle\">Osobna Članska Autentikacija</div>\n");
     fprintf(fhtml, "    <h1>Prijava u Osobni e-Spis Pretinac</h1>\n");
     fprintf(fhtml, "    <p style=\"font-size: 13px; color: #666;\">Unesite Vaš osobni pristupni PIN za otključavanje Vašeg pretinca i sigurno podnošenje akata.</p>\n");
