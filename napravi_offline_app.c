@@ -77,7 +77,7 @@ int main(void) {
     fprintf(fhtml, "    </style>\n");
     fprintf(fhtml, "</head>\n<body>\n\n");
 
-    #define PRINT_LOGO \
+    #define ispisi_grb_zajednica(fhtml); \
         fprintf(fhtml, "    <div class=\"logo-header\">\n"); \
         fprintf(fhtml, "        <img src=\"logo.png\" alt=\"Zajednica RUKE Grb\">\n"); \
         fprintf(fhtml, "        <div style=\"font-size: 16px; font-weight: bold; color: #2c3e50; margin-top: 8px;\">Zajednica RUKE</div>\n"); \
@@ -86,14 +86,14 @@ int main(void) {
 
     // Kartica 1: Verifikator pojedinačnog akta
     fprintf(fhtml, "<div id=\"app\" class=\"card\">\n");
-    PRINT_LOGO
+    ispisi_grb_zajednica(fhtml);
     fprintf(fhtml, "    <div class=\"subtitle\">C23 Offline e-Spis Verifikator</div>\n");
     fprintf(fhtml, "    <div id=\"content\">Učitavanje podataka iz baze...</div>\n");
     fprintf(fhtml, "</div>\n\n");
 
     // Kartica 2: Članska Prijava
     fprintf(fhtml, "<div id=\"authCard\" class=\"card-auth\">\n");
-    PRINT_LOGO
+    ispisi_grb_bst(fhtml);
     fprintf(fhtml, "    <div class=\"subtitle\">Osobna Članska Autentikacija</div>\n");
     fprintf(fhtml, "    <h1>Prijava u Osobni e-Spis Pretinac</h1>\n");
     fprintf(fhtml, "    <p style=\"font-size: 13px; color: #666;\">Unesite Vaš osobni pristupni PIN za otključavanje Vašeg pretinca i sigurno podnošenje akata.</p>\n");
@@ -115,7 +115,7 @@ int main(void) {
 
     // Pretinac
     fprintf(fhtml, "    <div class=\"card-inbox\">\n");
-    PRINT_LOGO
+    ispisi_grb_bst(fhtml);
     fprintf(fhtml, "        <div class=\"subtitle\">📬 Osobni Digitalni Pretinac & Registar Akata</div>\n");
     fprintf(fhtml, "        <div class=\"controls\">\n");
     fprintf(fhtml, "            <input type=\"text\" id=\"searchInput\" placeholder=\"🔍 Pretraži Vaše akte...\" onkeyup=\"filtrirajAkte()\">\n");
@@ -129,7 +129,7 @@ int main(void) {
 
     // Forma
     fprintf(fhtml, "    <div class=\"card-form\">\n");
-    PRINT_LOGO
+    
     fprintf(fhtml, "        <div class=\"subtitle\">Klijentska Kriptografska Obrada i Automatski Prijem</div>\n");
     fprintf(fhtml, "        <h1>Uloži novi podnesak s lokalnim SHA-256 pečatom</h1>\n");
     fprintf(fhtml, "        <p style=\"font-size: 13px; color: #666;\">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak, generira Potvrdu o zaprimanju te šalje obavijest u ured.</p>\n");
