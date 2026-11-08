@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Džepni e-Spis Pretinac — Zajednica RUKE</title>
+    <title>Zajednica RUKE • e-Spis Pretinac</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #eef2f5; color: #333; margin: 0; padding: 20px; }
         .card { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #28a745; }
@@ -30,7 +30,7 @@
 
 <div id="app" class="card">
     <div class="subtitle">Zajednica RUKE • C23 Offline e-Spis Verifikator</div>
-    <div id="content">Učitavanje podataka iz ugrađene baze...</div>
+    <div id="content">Učitavanje podataka iz baze...</div>
 </div>
 
 <div class="card-inbox">
@@ -46,18 +46,29 @@
 </div>
 
 <div class="card-form">
-    <div class="subtitle">📤 e-Spis Ured • Priprema Podneska</div>
-    <h1>Podnesi novi akt</h1>
-    <form action="mailto:zajednicaruke@gmail.com" method="POST" enctype="text/plain">
+    <div class="subtitle">📤 e-Spis Ured • Podnošenje akta s mobitela</div>
+    <h1>Uloži novi podnesak (PDF)</h1>
+    <p style="font-size: 13px; color: #666;">Odaberite PDF dokument iz memorije mobitela. Sustav automatski zaprima podnesak u ured Zajednice RUKE.</p>
+    <form action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="access_key" value="a8c8872b-8a1a-4537-8095-2c262c5b736b">
+        <input type="hidden" name="subject" value="[Novi Podnesak e-Spis] Zajednica RUKE">
         <div style="margin-bottom: 12px;">
-            <label class="label">Broj akta</label>
-            <input type="text" name="broj_akta" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+            <label class="label">Broj akta / Oznaka</label>
+            <input type="text" name="broj_akta" required placeholder="npr. MG/PRIGOVOR-2026" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
         </div>
         <div style="margin-bottom: 12px;">
-            <label class="label">Pošiljatelj</label>
+            <label class="label">Pošiljatelj (Ime i prezime)</label>
             <input type="text" name="posiljatelj" required value="Michael Golubičić" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
         </div>
-        <button type="submit" style="display: block; width: 100%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">📧 Pošalji podnesak</button>
+        <div style="margin-bottom: 12px;">
+            <label class="label">Primatelj (Institucija / Sud)</label>
+            <input type="text" name="primatelj" required placeholder="npr. Općinski sud u Vinkovcima" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label class="label">Odaberi PDF dokument</label>
+            <input type="file" name="attachment" accept=".pdf" required style="width: 100%; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; box-sizing: border-box;">
+        </div>
+        <button type="submit" style="display: block; width: 100%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">🚀 Pošalji podnesak s privitkom</button>
     </form>
 </div>
 
@@ -107,7 +118,7 @@
             content.innerHTML = `<div class="badge" style="background:#ffebee; color:#c62828;">❌ NEVAŽEĆI AKT</div><p>Dokument ne postoji u bazi.</p>`;
         }
     } else {
-        content.innerHTML = `<p style="color:#666;">Džepni C23 e-Spis je spreman. Pretražujte akte u pretincu ispod.</p>`;
+        content.innerHTML = `<p style="color:#666;">Džepni C23 e-Spis je spreman. Pretražujte akte u pretincu ispod ili unesite novi podnesak.</p>`;
     }
 
     function prikaziAkte(aktiZaPrikaz) {
@@ -137,10 +148,9 @@
         prikaziAkte(filtrirani);
     }
 
-    // Inicijalni prikaz svih akata
     prikaziAkte(data.akti);
 </script>
 
-<div class="footer">Zajednica RUKE (OIB: 64517735227) • C23 Strojni Offline e-Spis Pretinac sa Trailicom</div>
+<div class="footer">Zajednica RUKE (OIB: 64517735227) • C23 Strojni Offline e-Spis Pretinac</div>
 </body>
 </html>
