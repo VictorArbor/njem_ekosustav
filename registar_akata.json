@@ -45,5 +45,16 @@
       "timestamp": "2026-11-08T04:37:52Z",
       "status": "AKTIVAN"
     }
+  ,
+    {
+      "broj_akta": "MG/PRIGOVOR-HRT-2026",
+      "kontrolni_broj": "C58F-9B2C",
+      "sha256": "c58f9b2c01f81ffbb6468803dfb3e6e2fd4fde6831399a6d2309206c5c2ffa72",
+      "datoteka_putanja": "/data/data/com.termux/files/home/storage/downloads/📄Prigovor MG-HRT-05-11-2026.pdf",
+      "qr_kod_slika": "QR_MG_PRIGOVOR-HRT-2026.pbm",
+      "velicina_bajtova": 223435,
+      "timestamp": "2026-11-08T04:43:42Z",
+      "status": "AKTIVAN"
+    }
   ]
 }
