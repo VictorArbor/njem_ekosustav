@@ -149,7 +149,15 @@ int main(void) {
     fprintf(fhtml, "    let localActs = JSON.parse(localStorage.getItem('ruke_akti') || '[]');\n");
     fprintf(fhtml, "    let allActs = [...serverData.akti, ...localActs];\n\n");
 
-    fprintf(fhtml, "    function initsijalizirajKorisnika() {\n");
+    fprintf(fhtml, "    
+    function zatraziAndroidDopustenje() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }
+
+    function initsijalizirajKorisnika() {
+        zatraziAndroidDopustenje();\n");
     fprintf(fhtml, "        if (trenutniKorisnik) {\n");
     fprintf(fhtml, "            document.getElementById('authCard').style.display = 'none';\n");
     fprintf(fhtml, "            document.getElementById('privateSection').style.display = 'block';\n");
@@ -250,7 +258,16 @@ int main(void) {
     fprintf(fhtml, "            const mailBody = encodeURIComponent('SISTEMSKA POTVRDA O ZAPRIMANJU PODNESKA\\n\\nBroj akta: ' + broj + '\\nKontrolni kod: ' + kontrolni_broj + '\\nSHA-256: ' + sha256 + '\\nPošiljatelj: ' + posiljatelj + '\\nPrimatelj: ' + primatelj + '\\nDatum/Vrijeme: ' + timestamp + ' (UTC)\\nStatus: ZAPRIMLJENO\\n\\nPotvrda o zaprimanju je automatski generirana.');\n");
     fprintf(fhtml, "            const mailtoUrl = `mailto:zajednicaruke@gmail.com?subject=${mailSubject}&body=${mailBody}`;\n\n");
 
-    // 1. Događaj: Automatsko preuzimanje Potvrde (.txt)
+    
+            // NATIVNA ANDROID OBAVIJEST U STATUSNOJ TRACI MOBITELA
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Zajednica RUKE • Novi Podnesak!', {
+                    body: `Zaprimljen akt: ${broj}\nKod: ${kontrolni_broj}\nPošiljatelj: ${posiljatelj}`,
+                    icon: 'logo.png'
+                });
+            }
+
+            // 1. Događaj: Automatsko preuzimanje Potvrde (.txt)
     fprintf(fhtml, "            const autoDownloadLink = document.createElement('a');\n");
     fprintf(fhtml, "            autoDownloadLink.href = potvrdaUrl;\n");
     fprintf(fhtml, "            autoDownloadLink.download = `Potvrda_zaprimanja_${broj.replace(/[^a-zA-Z0-9_-]/g, '_')}_${kontrolni_broj}.txt`;\n");
