@@ -70,7 +70,7 @@ int main(void) {
     fprintf(fhtml, "    <div id=\"content\">Učitavanje podataka iz baze...</div>\n");
     fprintf(fhtml, "</div>\n\n");
 
-    // Kartica 2: Članska Prijava (Login Gate)
+    // Kartica 2: Članska Prijava
     fprintf(fhtml, "<div id=\"authCard\" class=\"card-auth\">\n");
     PRINT_LOGO
     fprintf(fhtml, "    <div class=\"subtitle\">Osobna Članska Autentikacija</div>\n");
@@ -83,9 +83,8 @@ int main(void) {
     fprintf(fhtml, "    <div id=\"authMsg\" style=\"margin-top: 10px; font-size: 13px; font-weight: bold;\"></div>\n");
     fprintf(fhtml, "</div>\n\n");
 
-    // Sekcija nakon uspješne prijave (Privatni Pretinac + Forma)
+    // Privata Sekcija
     fprintf(fhtml, "<div id=\"privateSection\" style=\"display: none;\">\n");
-
     fprintf(fhtml, "    <div class=\"card-inbox\" style=\"margin-bottom: 0px;\">\n");
     fprintf(fhtml, "        <div class=\"user-bar\">\n");
     fprintf(fhtml, "            <div>👤 Prijavljeni korisnik: <b id=\"userNameDisplay\">-</b> (<span id=\"userRoleDisplay\">-</span>)</div>\n");
@@ -93,7 +92,7 @@ int main(void) {
     fprintf(fhtml, "        </div>\n");
     fprintf(fhtml, "    </div>\n\n");
 
-    // Kartica: Osobni Korisnički Pretinac
+    // Pretinac
     fprintf(fhtml, "    <div class=\"card-inbox\">\n");
     PRINT_LOGO
     fprintf(fhtml, "        <div class=\"subtitle\">📬 Osobni Digitalni Pretinac & Registar Akata</div>\n");
@@ -107,12 +106,12 @@ int main(void) {
     fprintf(fhtml, "        <div id=\"inbox-content\">Učitavanje osobnog pretinca...</div>\n");
     fprintf(fhtml, "    </div>\n\n");
 
-    // Kartica: Forma za Prijem i Hashing PDF-a
+    // Forma
     fprintf(fhtml, "    <div class=\"card-form\">\n");
     PRINT_LOGO
     fprintf(fhtml, "        <div class=\"subtitle\">Klijentska Kriptografska Obrada i Automatski Prijem</div>\n");
     fprintf(fhtml, "        <h1>Uloži novi podnesak s lokalnim SHA-256 pečatom</h1>\n");
-    fprintf(fhtml, "        <p style=\"font-size: 13px; color: #666;\">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak, automatski generira i preuzima <b>Potvrdu o zaprimanju Podneska</b> te otvara e-mail obavijest za <b>zajednicaruke@gmail.com</b>.</p>\n");
+    fprintf(fhtml, "        <p style=\"font-size: 13px; color: #666;\">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak, generira Potvrdu o zaprimanju te šalje obavijest u ured.</p>\n");
     fprintf(fhtml, "        <form onsubmit=\"obradiPodnesak(event)\">\n");
     fprintf(fhtml, "            <div style=\"margin-bottom: 12px;\">\n");
     fprintf(fhtml, "                <label class=\"label\">Broj akta / Oznaka</label>\n");
@@ -130,13 +129,13 @@ int main(void) {
     fprintf(fhtml, "                <label class=\"label\">Odaberi PDF dokument</label>\n");
     fprintf(fhtml, "                <input type=\"file\" id=\"pfile\" accept=\".pdf\" required style=\"width: 100%%; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; box-sizing: border-box;\">\n");
     fprintf(fhtml, "            </div>\n");
-    fprintf(fhtml, "            <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">⚡ Izradi SHA-256 Pečat, Potvrdu i Pošalji Obavijest</button>\n");
+    fprintf(fhtml, "            <button type=\"submit\" style=\"display: block; width: 100%%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;\">⚡ Izradi SHA-256 Pečat i Generiraj Potvrdu</button>\n");
     fprintf(fhtml, "        </form>\n");
     fprintf(fhtml, "        <div id=\"resultArea\" style=\"margin-top: 20px;\"></div>\n");
     fprintf(fhtml, "    </div>\n");
     fprintf(fhtml, "</div>\n\n");
 
-    // JavaScript Logika
+    // JavaScript
     fprintf(fhtml, "<script>\n");
     fprintf(fhtml, "    const serverData = %s;\n\n", json_buf);
 
@@ -145,19 +144,15 @@ int main(void) {
     fprintf(fhtml, "        'RUKE2026': { ime: 'Član Zajednice RUKE', oib: '64517735227', uloga: 'Član' }\n");
     fprintf(fhtml, "    };\n\n");
 
+    // UNESITE VAŠ TELEGRAM BOT TOKEN I CHAT ID OVDJE DA VAM STIŽE PUSH DIREKTNO NA MOBITEL
+    fprintf(fhtml, "    const TG_BOT_TOKEN = ''; // Upišite npr: '7891234567:AAHxxx...'\n");
+    fprintf(fhtml, "    const TG_CHAT_ID = '';   // Upišite npr: '123456789'\n\n");
+
     fprintf(fhtml, "    let trenutniKorisnik = JSON.parse(sessionStorage.getItem('ruke_active_user') || 'null');\n");
     fprintf(fhtml, "    let localActs = JSON.parse(localStorage.getItem('ruke_akti') || '[]');\n");
     fprintf(fhtml, "    let allActs = [...serverData.akti, ...localActs];\n\n");
 
-    fprintf(fhtml, "    
-    function zatraziAndroidDopustenje() {
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
-    }
-
-    function initsijalizirajKorisnika() {
-        zatraziAndroidDopustenje();\n");
+    fprintf(fhtml, "    function initsijalizirajKorisnika() {\n");
     fprintf(fhtml, "        if (trenutniKorisnik) {\n");
     fprintf(fhtml, "            document.getElementById('authCard').style.display = 'none';\n");
     fprintf(fhtml, "            document.getElementById('privateSection').style.display = 'block';\n");
@@ -176,7 +171,6 @@ int main(void) {
     fprintf(fhtml, "        if (clanoviBaza[pin]) {\n");
     fprintf(fhtml, "            trenutniKorisnik = clanoviBaza[pin];\n");
     fprintf(fhtml, "            sessionStorage.setItem('ruke_active_user', JSON.stringify(trenutniKorisnik));\n");
-    fprintf(fhtml, "            document.getElementById('authMsg').innerText = '';\n");
     fprintf(fhtml, "            initsijalizirajKorisnika();\n");
     fprintf(fhtml, "        } else {\n");
     fprintf(fhtml, "            document.getElementById('authMsg').style.color = '#dc3545';\n");
@@ -202,17 +196,17 @@ int main(void) {
 
     fprintf(fhtml, "    async function obradiPodnesak(e) {\n");
     fprintf(fhtml, "        e.preventDefault();\n");
-    fprintf(fhtml, "        if (!trenutniKorisnik) { alert('Sesija je istekla. Prijavite se ponovno.'); return; }\n");
+    fprintf(fhtml, "        if (!trenutniKorisnik) { alert('Sesija je istekla.'); return; }\n");
     fprintf(fhtml, "        const broj = document.getElementById('pBroj').value.trim();\n");
     fprintf(fhtml, "        const posiljatelj = trenutniKorisnik.ime;\n");
     fprintf(fhtml, "        const primatelj = document.getElementById('pPrimatelj').value.trim();\n");
     fprintf(fhtml, "        const fileInput = document.getElementById('pfile');\n");
     fprintf(fhtml, "        const resultArea = document.getElementById('resultArea');\n\n");
     
-    fprintf(fhtml, "        if (fileInput.files.length === 0) { alert('Molimo odaberite PDF dokument.'); return; }\n");
+    fprintf(fhtml, "        if (fileInput.files.length === 0) { alert('Odaberite PDF.'); return; }\n");
     fprintf(fhtml, "        const file = fileInput.files[0];\n\n");
 
-    fprintf(fhtml, "        resultArea.innerHTML = '<p style=\"color: #0056b3; font-weight: bold;\">⏳ Izračun SHA-256 kriptografskog sažetka...</p>';\n\n");
+    fprintf(fhtml, "        resultArea.innerHTML = '<p style=\"color: #0056b3; font-weight: bold;\">⏳ Kriptografska obrada u tijeku...</p>';\n\n");
 
     fprintf(fhtml, "        try {\n");
     fprintf(fhtml, "            const buffer = await file.arrayBuffer();\n");
@@ -235,39 +229,18 @@ int main(void) {
     fprintf(fhtml, "            };\n\n");
 
     fprintf(fhtml, "            localActs.push(noviAkt);\n");
-    fprintf(fhtml, "            localStorage.setItem('ruke_akti', JSON.stringify(localActs));
-
-            // AUTOMATSKA TELEGRAM PUSH OBAVIJEST (0,00 € - Instantno na mobitel)
-            const TELEGRAM_BOT_TOKEN = '7891234567:AAxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // Unesite Vaš Bot Token
-            const TELEGRAM_CHAT_ID = '123456789'; // Unesite Vaš osobni Chat ID
-
-            if (TELEGRAM_BOT_TOKEN !== '7891234567:AAxxxxxxxxxxxxxxxxxxxxxxxxxxxx') {
-                fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${tgMsg}`).catch(err => console.log('TG error:', err));
-            }
-\n");
+    fprintf(fhtml, "            localStorage.setItem('ruke_akti', JSON.stringify(localActs));\n");
     fprintf(fhtml, "            allActs = [...serverData.akti, ...localActs];\n");
     fprintf(fhtml, "            prikaziAkte(dohvatiOsobneAkte());\n\n");
 
-    // Potvrda tekst
+    // Tekst Potvrde s UTF-8 BOM-om za ispravna hrvatska slova
     fprintf(fhtml, "            const potvrdaTekst = `SLUŽBENA POTVRDA O ZAPRIMANJU PODNESKA\\nZajednica RUKE (OIB: 64517735227)\\n-----------------------------------------------------\\nBroj akta / Podneska: ${broj}\\nKontrolni kod verifikacije: ${kontrolni_broj}\\nSHA-256 Kriptografski sažetak: ${sha256}\\nPošiljatelj: ${posiljatelj}\\nPrimatelj: ${primatelj}\\nDatum i vrijeme zaprimanja: ${timestamp} (UTC)\\nStatus obrade: ZAPRIMLJENO UNUTAR OSOBNOG e-SPISA\\n-----------------------------------------------------\\nKriptografski pečatirano • eIDAS standard compliant`;\n");
-    fprintf(fhtml, "            const blob = new Blob([potvrdaTekst], {type: 'text/plain;charset=utf-8'});\n");
+    
+    // Dodavanje UTF-8 BOM bajtova (\uFEFF) za čist prikaz hrvatskih slova na Androidu i Windowsima
+    fprintf(fhtml, "            const blob = new Blob(['\\uFEFF' + potvrdaTekst], {type: 'text/plain;charset=utf-8'});\n");
     fprintf(fhtml, "            const potvrdaUrl = URL.createObjectURL(blob);\n\n");
 
-    // E-mail veza
-    fprintf(fhtml, "            const mailSubject = encodeURIComponent('[Potvrda zaprimanja e-Spis] Akt: ' + broj);\n");
-    fprintf(fhtml, "            const mailBody = encodeURIComponent('SISTEMSKA POTVRDA O ZAPRIMANJU PODNESKA\\n\\nBroj akta: ' + broj + '\\nKontrolni kod: ' + kontrolni_broj + '\\nSHA-256: ' + sha256 + '\\nPošiljatelj: ' + posiljatelj + '\\nPrimatelj: ' + primatelj + '\\nDatum/Vrijeme: ' + timestamp + ' (UTC)\\nStatus: ZAPRIMLJENO\\n\\nPotvrda o zaprimanju je automatski generirana.');\n");
-    fprintf(fhtml, "            const mailtoUrl = `mailto:zajednicaruke@gmail.com?subject=${mailSubject}&body=${mailBody}`;\n\n");
-
-    
-            // NATIVNA ANDROID OBAVIJEST U STATUSNOJ TRACI MOBITELA
-            if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification('Zajednica RUKE • Novi Podnesak!', {
-                    body: `Zaprimljen akt: ${broj}\nKod: ${kontrolni_broj}\nPošiljatelj: ${posiljatelj}`,
-                    icon: 'logo.png'
-                });
-            }
-
-            // 1. Događaj: Automatsko preuzimanje Potvrde (.txt)
+    // 1. Automatsko preuzimanje Potvrde
     fprintf(fhtml, "            const autoDownloadLink = document.createElement('a');\n");
     fprintf(fhtml, "            autoDownloadLink.href = potvrdaUrl;\n");
     fprintf(fhtml, "            autoDownloadLink.download = `Potvrda_zaprimanja_${broj.replace(/[^a-zA-Z0-9_-]/g, '_')}_${kontrolni_broj}.txt`;\n");
@@ -275,22 +248,28 @@ int main(void) {
     fprintf(fhtml, "            autoDownloadLink.click();\n");
     fprintf(fhtml, "            document.body.removeChild(autoDownloadLink);\n\n");
 
-    // 2. Događaj: Pokretanje e-mail klijenta s odmakom od 400ms da preglednik osigura oba procesa
-    fprintf(fhtml, "            setTimeout(() => {\n");
-    fprintf(fhtml, "                window.location.href = mailtoUrl;\n");
-    fprintf(fhtml, "            }, 400);\n\n");
+    // 2. Automatska Push obavijest na tvoj Telegram (ako su uneseni token i chat id)
+    fprintf(fhtml, "            if (TG_BOT_TOKEN !== '' && TG_CHAT_ID !== '') {\n");
+    fprintf(fhtml, "                const tgMsg = encodeURIComponent(`🚨 [Zajednica RUKE] NOVI PODNESAK!\\n\\nBroj: ${broj}\\nKod: ${kontrolni_broj}\\nSHA-256: ${sha256}\\nPošiljatelj: ${posiljatelj}\\nPrimatelj: ${primatelj}\\nDatum: ${timestamp}`);\n");
+    fprintf(fhtml, "                fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${tgMsg}`).catch(e => console.log(e));\n");
+    fprintf(fhtml, "            }\n\n");
+
+    // 3. E-mail obavijest na mail klijent
+    fprintf(fhtml, "            const mailSubject = encodeURIComponent('[Potvrda e-Spis] Akt: ' + broj);\n");
+    fprintf(fhtml, "            const mailBody = encodeURIComponent(potvrdaTekst);\n");
+    fprintf(fhtml, "            const mailtoUrl = `mailto:zajednicaruke@gmail.com?subject=${mailSubject}&body=${mailBody}`;\n\n");
 
     fprintf(fhtml, "            resultArea.innerHTML = `\n");
     fprintf(fhtml, "                <div class=\"badge\">✓ USPJEŠNO ZAPRIMLJENO I PEČATIRANO</div>\n");
-    fprintf(fhtml, "                <p style=\"font-size:13px; color:#28a745; font-weight:bold;\">📥 Potvrda je automatski preuzeta i mail klijent je automatski pokrenut!</p>\n");
+    fprintf(fhtml, "                <p style=\"font-size:13px; color:#28a745; font-weight:bold;\">📥 Potvrda je preuzeta s ispravnim hrvatskim slovima (UTF-8).</p>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">Kontrolni broj</div><div class=\"value\">${kontrolni_broj}</div></div>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">SHA-256 Otisak</div><div class=\"value\">${sha256}</div></div>\n");
-    fprintf(fhtml, "                <a href=\"${potvrdaUrl}\" download=\"Potvrda_zaprimanja_${kontrolni_broj}.txt\" class=\"btn btn-potvrda\" style=\"display:block; text-align:center;\">📜 Ponovno preuzmi Potvrdu o zaprimanju (.txt)</a>\n");
-    fprintf(fhtml, "                <a href=\"${mailtoUrl}\" class=\"btn btn-mail\" style=\"display:block; text-align:center;\">📧 Otvori mail obavijest ponovno</a>\n");
+    fprintf(fhtml, "                <a href=\"${potvrdaUrl}\" download=\"Potvrda_zaprimanja_${kontrolni_broj}.txt\" class=\"btn btn-potvrda\" style=\"display:block; text-align:center;\">📜 Ponovno preuzmi Potvrdu (.txt)</a>\n");
+    fprintf(fhtml, "                <a href=\"${mailtoUrl}\" class=\"btn btn-mail\" style=\"display:block; text-align:center;\">📧 Otvori mail obavijest</a>\n");
     fprintf(fhtml, "            `;\n\n");
 
     fprintf(fhtml, "        } catch(err) {\n");
-    fprintf(fhtml, "            resultArea.innerHTML = '<p style=\"color:red;\">Greška pri obradi PDF-a: ' + err.message + '</p>';\n");
+    fprintf(fhtml, "            resultArea.innerHTML = '<p style=\"color:red;\">Greška: ' + err.message + '</p>';\n");
     fprintf(fhtml, "        }\n");
     fprintf(fhtml, "    }\n\n");
 
@@ -307,7 +286,7 @@ int main(void) {
     fprintf(fhtml, "                <div class=\"badge\">✓ VERIFICIRAN IZVORNIK (OFFLINE)</div>\n");
     fprintf(fhtml, "                <h1>Broj akta: ${akt.broj_akta}</h1>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">Kontrolni broj</div><div class=\"value\">${akt.kontrolni_broj}</div></div>\n");
-    fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">SHA-256 Otisak</div><div class=\"value\">${sha256}</div></div>\n");
+    fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">SHA-256 Otisak</div><div class=\"value\">${akt.sha256}</div></div>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">Pošiljatelj ➔ Primatelj</div><div class=\"value\">${akt.posiljatelj} ➔ ${akt.primatelj}</div></div>\n");
     fprintf(fhtml, "                <div class=\"info-group\"><div class=\"label\">Vremenska oznaka</div><div class=\"value\">${akt.timestamp}</div></div>\n");
     fprintf(fhtml, "            `;\n");
@@ -354,6 +333,6 @@ int main(void) {
     fprintf(fhtml, "</body>\n</html>\n");
 
     fclose(fhtml);
-    printf("[C23 USPJEH] Regeneriran index.html s udvostručenim automatskim okidačem (preuzimanje + mail obavijest).\n");
+    printf("[C23 USPJEH] Regeneriran index.html s UTF-8 BOM-om i spreman za Telegram Push.\n");
     return EXIT_SUCCESS;
 }

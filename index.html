@@ -92,7 +92,7 @@
     </div>
         <div class="subtitle">Klijentska Kriptografska Obrada i Automatski Prijem</div>
         <h1>Uloži novi podnesak s lokalnim SHA-256 pečatom</h1>
-        <p style="font-size: 13px; color: #666;">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak, automatski generira i preuzima <b>Potvrdu o zaprimanju Podneska</b> te otvara e-mail obavijest za <b>zajednicaruke@gmail.com</b>.</p>
+        <p style="font-size: 13px; color: #666;">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak, generira Potvrdu o zaprimanju te šalje obavijest u ured.</p>
         <form onsubmit="obradiPodnesak(event)">
             <div style="margin-bottom: 12px;">
                 <label class="label">Broj akta / Oznaka</label>
@@ -110,7 +110,7 @@
                 <label class="label">Odaberi PDF dokument</label>
                 <input type="file" id="pfile" accept=".pdf" required style="width: 100%; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; box-sizing: border-box;">
             </div>
-            <button type="submit" style="display: block; width: 100%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">⚡ Izradi SHA-256 Pečat, Potvrdu i Pošalji Obavijest</button>
+            <button type="submit" style="display: block; width: 100%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">⚡ Izradi SHA-256 Pečat i Generiraj Potvrdu</button>
         </form>
         <div id="resultArea" style="margin-top: 20px;"></div>
     </div>
@@ -144,6 +144,9 @@
         'RUKE2026': { ime: 'Član Zajednice RUKE', oib: '64517735227', uloga: 'Član' }
     };
 
+    const TG_BOT_TOKEN = ''; // Upišite npr: '7891234567:AAHxxx...'
+    const TG_CHAT_ID = '';   // Upišite npr: '123456789'
+
     let trenutniKorisnik = JSON.parse(sessionStorage.getItem('ruke_active_user') || 'null');
     let localActs = JSON.parse(localStorage.getItem('ruke_akti') || '[]');
     let allActs = [...serverData.akti, ...localActs];
@@ -167,7 +170,6 @@
         if (clanoviBaza[pin]) {
             trenutniKorisnik = clanoviBaza[pin];
             sessionStorage.setItem('ruke_active_user', JSON.stringify(trenutniKorisnik));
-            document.getElementById('authMsg').innerText = '';
             initsijalizirajKorisnika();
         } else {
             document.getElementById('authMsg').style.color = '#dc3545';
@@ -193,17 +195,17 @@
 
     async function obradiPodnesak(e) {
         e.preventDefault();
-        if (!trenutniKorisnik) { alert('Sesija je istekla. Prijavite se ponovno.'); return; }
+        if (!trenutniKorisnik) { alert('Sesija je istekla.'); return; }
         const broj = document.getElementById('pBroj').value.trim();
         const posiljatelj = trenutniKorisnik.ime;
         const primatelj = document.getElementById('pPrimatelj').value.trim();
         const fileInput = document.getElementById('pfile');
         const resultArea = document.getElementById('resultArea');
 
-        if (fileInput.files.length === 0) { alert('Molimo odaberite PDF dokument.'); return; }
+        if (fileInput.files.length === 0) { alert('Odaberite PDF.'); return; }
         const file = fileInput.files[0];
 
-        resultArea.innerHTML = '<p style="color: #0056b3; font-weight: bold;">⏳ Izračun SHA-256 kriptografskog sažetka...</p>';
+        resultArea.innerHTML = '<p style="color: #0056b3; font-weight: bold;">⏳ Kriptografska obrada u tijeku...</p>';
 
         try {
             const buffer = await file.arrayBuffer();
@@ -231,12 +233,8 @@
             prikaziAkte(dohvatiOsobneAkte());
 
             const potvrdaTekst = `SLUŽBENA POTVRDA O ZAPRIMANJU PODNESKA\nZajednica RUKE (OIB: 64517735227)\n-----------------------------------------------------\nBroj akta / Podneska: ${broj}\nKontrolni kod verifikacije: ${kontrolni_broj}\nSHA-256 Kriptografski sažetak: ${sha256}\nPošiljatelj: ${posiljatelj}\nPrimatelj: ${primatelj}\nDatum i vrijeme zaprimanja: ${timestamp} (UTC)\nStatus obrade: ZAPRIMLJENO UNUTAR OSOBNOG e-SPISA\n-----------------------------------------------------\nKriptografski pečatirano • eIDAS standard compliant`;
-            const blob = new Blob([potvrdaTekst], {type: 'text/plain;charset=utf-8'});
+            const blob = new Blob(['\uFEFF' + potvrdaTekst], {type: 'text/plain;charset=utf-8'});
             const potvrdaUrl = URL.createObjectURL(blob);
-
-            const mailSubject = encodeURIComponent('[Potvrda zaprimanja e-Spis] Akt: ' + broj);
-            const mailBody = encodeURIComponent('SISTEMSKA POTVRDA O ZAPRIMANJU PODNESKA\n\nBroj akta: ' + broj + '\nKontrolni kod: ' + kontrolni_broj + '\nSHA-256: ' + sha256 + '\nPošiljatelj: ' + posiljatelj + '\nPrimatelj: ' + primatelj + '\nDatum/Vrijeme: ' + timestamp + ' (UTC)\nStatus: ZAPRIMLJENO\n\nPotvrda o zaprimanju je automatski generirana.');
-            const mailtoUrl = `mailto:zajednicaruke@gmail.com?subject=${mailSubject}&body=${mailBody}`;
 
             const autoDownloadLink = document.createElement('a');
             autoDownloadLink.href = potvrdaUrl;
@@ -245,21 +243,26 @@
             autoDownloadLink.click();
             document.body.removeChild(autoDownloadLink);
 
-            setTimeout(() => {
-                window.location.href = mailtoUrl;
-            }, 400);
+            if (TG_BOT_TOKEN !== '' && TG_CHAT_ID !== '') {
+                const tgMsg = encodeURIComponent(`🚨 [Zajednica RUKE] NOVI PODNESAK!\n\nBroj: ${broj}\nKod: ${kontrolni_broj}\nSHA-256: ${sha256}\nPošiljatelj: ${posiljatelj}\nPrimatelj: ${primatelj}\nDatum: ${timestamp}`);
+                fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${tgMsg}`).catch(e => console.log(e));
+            }
+
+            const mailSubject = encodeURIComponent('[Potvrda e-Spis] Akt: ' + broj);
+            const mailBody = encodeURIComponent(potvrdaTekst);
+            const mailtoUrl = `mailto:zajednicaruke@gmail.com?subject=${mailSubject}&body=${mailBody}`;
 
             resultArea.innerHTML = `
                 <div class="badge">✓ USPJEŠNO ZAPRIMLJENO I PEČATIRANO</div>
-                <p style="font-size:13px; color:#28a745; font-weight:bold;">📥 Potvrda je automatski preuzeta i mail klijent je automatski pokrenut!</p>
+                <p style="font-size:13px; color:#28a745; font-weight:bold;">📥 Potvrda je preuzeta s ispravnim hrvatskim slovima (UTF-8).</p>
                 <div class="info-group"><div class="label">Kontrolni broj</div><div class="value">${kontrolni_broj}</div></div>
                 <div class="info-group"><div class="label">SHA-256 Otisak</div><div class="value">${sha256}</div></div>
-                <a href="${potvrdaUrl}" download="Potvrda_zaprimanja_${kontrolni_broj}.txt" class="btn btn-potvrda" style="display:block; text-align:center;">📜 Ponovno preuzmi Potvrdu o zaprimanju (.txt)</a>
-                <a href="${mailtoUrl}" class="btn btn-mail" style="display:block; text-align:center;">📧 Otvori mail obavijest ponovno</a>
+                <a href="${potvrdaUrl}" download="Potvrda_zaprimanja_${kontrolni_broj}.txt" class="btn btn-potvrda" style="display:block; text-align:center;">📜 Ponovno preuzmi Potvrdu (.txt)</a>
+                <a href="${mailtoUrl}" class="btn btn-mail" style="display:block; text-align:center;">📧 Otvori mail obavijest</a>
             `;
 
         } catch(err) {
-            resultArea.innerHTML = '<p style="color:red;">Greška pri obradi PDF-a: ' + err.message + '</p>';
+            resultArea.innerHTML = '<p style="color:red;">Greška: ' + err.message + '</p>';
         }
     }
 
@@ -276,7 +279,7 @@
                 <div class="badge">✓ VERIFICIRAN IZVORNIK (OFFLINE)</div>
                 <h1>Broj akta: ${akt.broj_akta}</h1>
                 <div class="info-group"><div class="label">Kontrolni broj</div><div class="value">${akt.kontrolni_broj}</div></div>
-                <div class="info-group"><div class="label">SHA-256 Otisak</div><div class="value">${sha256}</div></div>
+                <div class="info-group"><div class="label">SHA-256 Otisak</div><div class="value">${akt.sha256}</div></div>
                 <div class="info-group"><div class="label">Pošiljatelj ➔ Primatelj</div><div class="value">${akt.posiljatelj} ➔ ${akt.primatelj}</div></div>
                 <div class="info-group"><div class="label">Vremenska oznaka</div><div class="value">${akt.timestamp}</div></div>
             `;
