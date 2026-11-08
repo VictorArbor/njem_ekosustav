@@ -1,0 +1,79 @@
+name: Build NJM OS via Nix
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout koda
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Build APK via Nix Shell
+        run: |
+          nix develop --command bash -c "
+            mkdir -p app/src/main/java/com/njm/os app/src/main/res/values bin compiled
+
+            cat > app/src/main/AndroidManifest.xml << 'XML'
+            <?xml version=\"1.0\" encoding=\"utf-8\"?>
+            <manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" package=\"com.njm.os\">
+                <application android:label=\"NJM OS\" android:hasCode=\"true\">
+                    <activity android:name=\".MainActivity\" android:exported="true\">
+                        <intent-filter>
+                            <action android:name=\"android.intent.action.MAIN\"/>
+                            <category android:name=\"android.intent.category.LAUNCHER\"/>
+                        </intent-filter>
+                    </activity>
+                </application>
+            </manifest>
+            XML
+
+            echo '<resources><string name=\"app_name\">NJM OS</string></resources>' > app/src/main/res/values/strings.xml
+
+            cat > app/src/main/java/com/njm/os/MainActivity.java << 'JAVA'
+            package com.njm.os;
+            import android.app.Activity;
+            import android.os.Bundle;
+            import android.widget.TextView;
+
+            public class MainActivity extends Activity {
+                @Override
+                protected void onCreate(Bundle savedInstanceState) {
+                    super.onCreate(savedInstanceState);
+                    TextView tv = new TextView(this);
+                    tv.setText(\"🚀 NJM OS - Izgrađeno u oblaku bez restrikcija!\");
+                    tv.setTextSize(20);
+                    tv.setPadding(40, 40, 40, 40);
+                    setContentView(tv);
+                }
+            }
+            JAVA
+
+            aapt2 compile --dir app/src/main/res -o compiled/
+            aapt2 link -o unaligned.apk -I \$ANDROID_HOME/platforms/android-34/android.jar --manifest app/src/main/AndroidManifest.xml compiled/*.flat --auto-add-overlay
+            
+            javac -classpath \$ANDROID_HOME/platforms/android-34/android.jar app/src/main/java/com/njm/os/MainActivity.java -d bin/
+            
+            d8 --min-api 26 --output . bin/com/njm/os/MainActivity.class
+            
+            zip -u unaligned.apk classes.dex
+            zipalign -f 4 unaligned.apk aligned.apk
+            
+            keytool -genkeypair -keystore njm.keystore -storepass android -alias njm -keypass android -dname \"CN=NJM\" -keyalg RSA -keysize 2048 -validity 10000
+            apksigner sign --ks njm.keystore --ks-pass pass:android --v1-signing-enabled true --v2-signing-enabled true --out NJM-OS-FINAL.apk aligned.apk
+          "
+
+      - name: Upload Gotov APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NJM-OS-NIX-APK
+          path: NJM-OS-FINAL.apk
