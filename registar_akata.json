@@ -67,5 +67,16 @@
       "timestamp": "2026-11-08T04:49:12Z",
       "status": "AKTIVAN"
     }
+  ,
+    {
+      "broj_akta": "MG/KANGOO-ZAHTJEV-2026",
+      "kontrolni_broj": "B9E8-51F5",
+      "sha256": "b9e851f54c557788e529117a83eab80d8234f1bc0eb746c03beaf9d4493ec05e",
+      "datoteka_putanja": "/sdcard/01 Zajednica RUKE/Sluzbeni_Zahtjev_Zajednica_RUKE_Kangoo.pdf",
+      "qr_kod_slika": "QR_MG_KANGOO-ZAHTJEV-2026.pbm",
+      "velicina_bajtova": 270037,
+      "timestamp": "2026-11-08T05:14:23Z",
+      "status": "AKTIVAN"
+    }
   ]
 }

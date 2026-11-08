@@ -1,91 +1,63 @@
 <!DOCTYPE html>
 <html lang="hr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikacija Akta — Zajednica RUKE</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; color: #333; margin: 0; padding: 20px; }
-        .card { max-width: 600px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 6px solid #28a745; }
-        .card-error { border-top-color: #dc3545; }
-        h1 { font-size: 20px; color: #1a252f; margin-bottom: 5px; }
-        .subtitle { font-size: 13px; color: #6c757d; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
-        .badge { display: inline-block; padding: 6px 12px; background: #e8f5e9; color: #2e7d32; font-weight: bold; border-radius: 20px; font-size: 13px; margin-bottom: 15px; }
-        .info-group { margin-bottom: 12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
-        .label { font-size: 11px; color: #888; text-transform: uppercase; }
-        .value { font-size: 14px; font-weight: 600; color: #2c3e50; word-break: break-all; }
-        .btn-download { display: block; width: 100%; text-align: center; background: #0056b3; color: white; padding: 14px 0; text-decoration: none; font-weight: bold; border-radius: 8px; margin-top: 20px; font-size: 15px; box-shadow: 0 2px 8px rgba(0,86,179,0.3); }
-        .btn-download:hover { background: #004085; }
-        .footer { text-align: center; font-size: 11px; color: #aaa; margin-top: 30px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifikacija Akata - Zajednica RUKE</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; display: flex; justify-content: center; }
+  .card { background: #1e293b; padding: 2rem; border-radius: 12px; max-width: 600px; width: 100%; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+  h1 { color: #38bdf8; font-size: 1.5rem; border-bottom: 2px solid #334155; padding-bottom: 0.5rem; }
+  input, button { width: 100%; padding: 0.75rem; margin-top: 0.5rem; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; }
+  button { background: #0284c7; font-weight: bold; cursor: pointer; border: none; margin-top: 1rem; }
+  button:hover { background: #0369a1; }
+  .result { margin-top: 1.5rem; padding: 1rem; border-radius: 6px; display: none; background: #0f172a; border: 1px solid #334155; }
+  .valid { border-color: #22c55e; color: #4ade80; }
+  .invalid { border-color: #ef4444; color: #f87171; }
+</style>
 </head>
 <body>
-
-<div id="app" class="card">
-    <div class="subtitle">Zajednica RUKE • Registar Digitalnih Akata</div>
-    <div id="content">Učitavanje podataka verifikacije...</div>
+<div class="card">
+  <h1>Zajednica RUKE &bull; Verifikator Akata</h1>
+  <p style="font-size: 0.85rem; color: #94a3b8;">Matični OIB: 64517735227 | Sustav decentraliziranog verifikacijskog sidra</p>
+  <label>Broj akta:</label>
+<input type="text" id="broj_akta" placeholder="npr. MG/KANGOO-PUNOMOC-2026">
+  <label style="margin-top: 0.5rem; display:block;">Kontrolni broj:</label>
+<input type="text" id="ctrl_code" placeholder="npr. 589F-1771">
+  <button onclick="verificiraj()">VERIFICIRAJ AKT</button>
+  <div id="result" class="result"></div>
 </div>
-
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const trazeniBroj = params.get('broj');
-    const trazeniKod = params.get('kod');
-
-    fetch('registar_akata.json')
-        .then(res => res.json())
-        .then(data => {
-            const content = document.getElementById('content');
-            const app = document.getElementById('app');
-
-            if (!trazeniBroj || !trazeniKod) {
-                content.innerHTML = `<p style="color:#666;">Molimo unesite valjani Broj akta i Kontrolni broj u URL ili skenirajte QR kod s dokumenta.</p>`;
-                return;
-            }
-
-            const akt = data.akti.find(a => a.broj_akta === trazeniBroj && a.kontrolni_broj === trazeniKod);
-
-            if (akt) {
-                content.innerHTML = `
-                    <div class="badge">✓ VERIFICIRAN IZVORNIK</div>
-                    <h1>${akt.naziv || akt.broj_akta}</h1>
-                    
-                    <div class="info-group">
-                        <div class="label">Broj akta / Zapisa</div>
-                        <div class="value">${akt.broj_akta}</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label">Kontrolni broj (SHA-256 Token)</div>
-                        <div class="value">${akt.kontrolni_broj}</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label">SHA-256 Kriptografski sažetak</div>
-                        <div class="value">${akt.sha256}</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label">Pravni subjekt izdavatelj</div>
-                        <div class="value">${data.pravni_subjekt.naziv} (OIB: ${data.pravni_subjekt.oib})</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label">Datum i vrijeme fiksiranja</div>
-                        <div class="value">${akt.timestamp || 'N/A'}</div>
-                    </div>
-
-                    <a href="${akt.pdf_url}" download class="btn-download">📥 PREUZMI DIGITALNI IZVORNIK (QES PDF)</a>
-                `;
-            } else {
-                app.classList.add('card-error');
-                content.innerHTML = `
-                    <div class="badge" style="background:#ffebee; color:#c62828;">❌ NEVAŽEĆI AKT ILI KOD</div>
-                    <h1>Verifikacija nije uspjela</h1>
-                    <p>Dokument s navedenim Brojem akta ili Kontrolnim brojem ne postoji u službenom registru Udruge Zajednica RUKE ili je modificiran.</p>
-                `;
-            }
-        })
-        .catch(err => {
-            document.getElementById('content').innerHTML = 'Greška pri pristupu registru.';
-        });
+window.onload = function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('broj') && urlParams.has('kod')) {
+    document.getElementById('broj_akta').value = urlParams.get('broj');
+    document.getElementById('ctrl_code').value = urlParams.get('kod');
+    verificiraj();
+  }
+};
+async function verificiraj() {
+  const br = document.getElementById('broj_akta').value.trim();
+  const ctrl = document.getElementById('ctrl_code').value.trim().toUpperCase();
+  const res = document.getElementById('result');
+  res.style.display = 'block';
+  try {
+    const r = await fetch('registar_akata.json');
+    const data = await r.json();
+    const akt = data.akti.find(a => a.broj_akta === br && a.kontrolni_broj === ctrl);
+    if (akt) {
+      res.className = 'result valid';
+      res.innerHTML = `<strong>✅ AKT JE POTPUNO VALJAN I VERIFICIRAN</strong><br><br>` +
+                      `<b>Broj akta:</b> ${akt.broj_akta}<br>` +
+                      `<b>Kontrolni broj:</b> ${akt.kontrolni_broj}<br>` +
+                      `<b>Vremenska oznaka:</b> ${akt.timestamp}<br>` +
+                      `<b>SHA-256 Otisak:</b> <small>${akt.sha256}</small>`;
+    } else {
+      res.className = 'result invalid';
+      res.innerHTML = '❌ GRESKA: Akt s navedenim brojem i kontrolnim kodom nije pronađen u registru Zajednice RUKE!';
+    }
+  } catch (e) { res.className = 'result invalid'; res.innerHTML = 'Greška pri učitavanju registra.'; }
+}
 </script>
-
-<div class="footer">Decentralizirani e-Spis Verifikator • eIDAS & QES Kompatibilno</div>
 </body>
 </html>
