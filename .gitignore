@@ -1,0 +1,8 @@
+.njm_backups/
+*.bak
+*.bak_*
+*.log
+napravi_offline_app
+pdf_diag
+pdf_patch
+stampaj_pdf
