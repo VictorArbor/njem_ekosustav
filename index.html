@@ -8,6 +8,7 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #eef2f5; color: #333; margin: 0; padding: 20px; }
         .card { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #28a745; }
         .card-inbox { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #0056b3; }
+        .card-form { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #6f42c1; }
         .card-error { border-top-color: #dc3545; }
         h1 { font-size: 20px; color: #1a252f; margin-bottom: 5px; }
         .subtitle { font-size: 12px; color: #6c757d; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
@@ -25,14 +26,52 @@
 </head>
 <body>
 
+<!-- KARTICA 1: VERIFIKACIJA POJEDINAČNOG AKTA -->
 <div id="app" class="card">
     <div class="subtitle">Zajednica RUKE • Središnji e-Spis Verifikator</div>
     <div id="content">Učitavanje verifikacije...</div>
 </div>
 
+<!-- KARTICA 2: DIGITALNI KORISNIČKI PRETINAC / INBOX -->
 <div class="card-inbox">
     <div class="subtitle">📬 Digitalni Korisnički Pretinac & Arhiva Akata</div>
     <div id="inbox-content">Učitavanje zapisa registra...</div>
+</div>
+
+<!-- KARTICA 3: FORMA ZA PODNOŠENJE AKTA (e-Spis Ured) -->
+<div class="card-form">
+    <div class="subtitle">📤 e-Spis Ured • Podnošenje akta za članove</div>
+    <h1>Uloži novi podnesak</h1>
+    <p style="font-size: 13px; color: #666;">Učitajte svoj PDF dokument (prigovor, punomoć, zahtjev). Sustav zaprima akt u e-Spis pretinac Udruge Zajednica RUKE.</p>
+
+    <form id="podnesakForm" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="access_key" value="TVOJ_WEB3FORMS_KLJUC_OVDJE">
+        <input type="hidden" name="subject" value="[Novi Podnesak e-Spis] Zajednica RUKE">
+
+        <div style="margin-bottom: 12px;">
+            <label class="label">Naziv / Broj akta (npr. MG/PRIGOVOR-2026)</label>
+            <input type="text" name="broj_akta" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-top: 5px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label class="label">Pošiljatelj (Ime i prezime / Član)</label>
+            <input type="text" name="posiljatelj" required placeholder="npr. Ivan Horvat" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-top: 5px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label class="label">Primatelj (Institucija / Sud / Tvrtka)</label>
+            <input type="text" name="primatelj" required placeholder="npr. Općinski sud u Vinkovcima" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-top: 5px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label class="label">Odaberi PDF dokument</label>
+            <input type="file" name="attachment" accept=".pdf" required style="width: 100%; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; margin-top: 5px; background: #fafafa;">
+        </div>
+
+        <button type="submit" style="display: block; width: 100%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; box-shadow: 0 2px 8px rgba(111,66,193,0.3);">
+            🚀 Pošalji podnesak i zatraži e-Potvrdu
+        </button>
+    </form>
 </div>
 
 <script>
@@ -47,7 +86,6 @@
             const app = document.getElementById('app');
             const inbox = document.getElementById('inbox-content');
 
-            // 1. Verifikacija pojedinačnog akta u kartici
             if (trazeniBroj && trazeniKod) {
                 const akt = data.akti.find(a => a.broj_akta === trazeniBroj && a.kontrolni_broj === trazeniKod);
                 if (akt) {
@@ -68,10 +106,9 @@
                     content.innerHTML = `<div class="badge" style="background:#ffebee; color:#c62828;">❌ NEVAŽEĆI AKT</div><p>Dokument ne postoji u registru.</p>`;
                 }
             } else {
-                content.innerHTML = `<p style="color:#666;">Dobrodošli. Skenirajte QR kod ili odaberite akt iz pretinca u nastavku.</p>`;
+                content.innerHTML = `<p style="color:#666;">Dobrodošli. Skenirajte QR kod, odaberite akt iz pretinca ili podnesite novi akt putem forme ispod.</p>`;
             }
 
-            // 2. Generiranje tablice Pretinac / Inbox
             let tableHtml = `
                 <table>
                     <thead>
