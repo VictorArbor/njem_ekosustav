@@ -78,5 +78,16 @@
       "timestamp": "2026-11-08T05:14:23Z",
       "status": "AKTIVAN"
     }
+  ,
+    {
+      "broj_akta": "MG/KANGOO-PUNOMOC-2026",
+      "kontrolni_broj": "589F-1771",
+      "sha256": "589f17718f9849ecc358e21dd50b38dc13e9b906c8ea4a5a65237caa17e8c2ce",
+      "datoteka_putanja": "/sdcard/01 Zajednica RUKE/Punomoć registracija Kangoo.pdf",
+      "qr_kod_slika": "QR_MG_KANGOO-PUNOMOC-2026.pbm",
+      "velicina_bajtova": 784739,
+      "timestamp": "2026-11-08T05:36:10Z",
+      "status": "AKTIVAN"
+    }
   ]
 }
