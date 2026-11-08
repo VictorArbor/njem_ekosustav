@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+set -e
+
+WORKDIR="$HOME/njm_2_ekosustav_01"
+cd "$WORKDIR"
+
+if [ "$#" -lt 2 ]; then
+    echo "================================================================="
+    echo "  e-spis_RUKE — STROJNI C23 SUSTAV ZA E-KOMUNIKACIJU I E-POTVRDU"
+    echo "================================================================="
+    echo "Upotreba: e-spis_RUKE <broj_zapisa> <putanja_do_pdf> [posiljatelj] [primatelj]"
+    echo "================================================================="
+    exit 1
+fi
+
+BROJ_ZAPISA="$1"
+PDF_INPUT="$2"
+POSILJATELJ="${3:-Michael Golubičić (Zajednica RUKE)}"
+PRIMATELJ="${4:-Općinski sud u Vinkovcima / e-Spis Pretinac}"
+GMAIL_NOTIFY="dr.victor.arbor@gmail.com"
+TMP_MAIL="${TMPDIR:-$PREFIX/tmp}/email_podnesak.txt"
+
+if [ ! -f "$PDF_INPUT" ]; then
+    echo "❌ [GREŠKA] Ulazna datoteka ne postoji na stazi: $PDF_INPUT"
+    exit 2
+fi
+
+NAZIV_DATOTEKE=$(basename "$PDF_INPUT")
+mkdir -p pdf
+
+# 1. Automatsko provjeravanje i kompajliranje svih C23 modula
+if [ ! -f "./pečat_zajednica_RUKE" ] || [ "./pečat_zajednica_RUKE.c" -nt "./pečat_zajednica_RUKE" ]; then
+    echo "🔨 Kompajliranje C23 verifikacijskog jezgra..."
+    clang -std=c23 pečat_zajednica_RUKE.c -lcrypto -lqrencode -o pečat_zajednica_RUKE
+fi
+
+if [ ! -f "./napravi_offline_app" ] || [ "./napravi_offline_app.c" -nt "./napravi_offline_app" ]; then
+    echo "🔨 Kompajliranje C23 offline generatora..."
+    clang -std=c23 napravi_offline_app.c -o napravi_offline_app
+fi
+
+# 2. Kopiranje QES PDF-a u javnu mapu
+cp "$PDF_INPUT" "pdf/$NAZIV_DATOTEKE"
+
+# 3. Izvršavanje C23 verifikatora, registracija i izrada e-Potvrde
+echo "⚡ Izračun SHA-256 sažetka i generiranje e-Potvrde (C23 Native)..."
+./pečat_zajednica_RUKE "$BROJ_ZAPISA" "$PDF_INPUT" "$POSILJATELJ" "$PRIMATELJ"
+
+# 4. Strojno pakiranje u prenosivu offline HTML aplikaciju
+echo "📦 Ažuriranje samostalne offline aplikacije (Zajednica_RUKE_eSpis.html)..."
+./napravi_offline_app
+
+KONTROLNI_KOD=$(grep -A 2 "$BROJ_ZAPISA" registar_akata.json | grep "kontrolni_broj" | cut -d '"' -f 4)
+POTVRDA_TXT="pdf/potvrda_${KONTROLNI_KOD}.txt"
+
+# 5. Priprema e-mail obavijesti
+mkdir -p "$(dirname "$TMP_MAIL")"
+cat << MAIL_EOF > "$TMP_MAIL"
+From: "e-spis_RUKE Verifikator" <$GMAIL_NOTIFY>
+To: $GMAIL_NOTIFY
+Subject: [e-Potvrda] Zaprimljen podnesak $BROJ_ZAPISA (Kod: $KONTROLNI_KOD)
+
+SISTEMSKA OBAVIJEST O ZAPRIMANJU PODNESKA — UDRUGA ZAJEDNICA RUKE
+
+Broj zapisa / akta:  $BROJ_ZAPISA
+Kontrolni broj:      $KONTROLNI_KOD
+Pošiljatelj:         $POSILJATELJ
+Primatelj:           $PRIMATELJ
+Vremenska oznaka:    $(date -u +"%Y-%m-%dT%H:%M:%SZ") (UTC)
+Digitalni izvornik:  https://victorarbor.github.io/njem_ekosustav/pdf/$NAZIV_DATOTEKE
+e-Potvrda:           https://victorarbor.github.io/njem_ekosustav/$POTVRDA_TXT
+Verifikacijski URL:  https://victorarbor.github.io/njem_ekosustav/index.html?broj=$BROJ_ZAPISA&kod=$KONTROLNI_KOD
+MAIL_EOF
+
+# 6. Automatski Git commit, usklađivanje i push na GitHub
+echo "🚀 Objavljivanje akta, e-Potvrde i prenosive aplikacije na GitHub..."
+git add registar_akata.json index.html Zajednica_RUKE_eSpis.html README.md QR_*.pbm pdf/* 2>/dev/null || git add registar_akata.json index.html Zajednica_RUKE_eSpis.html
+
+if git diff-index --quiet HEAD --; then
+    echo "ℹ️ Registar i aplikacija već sadrže ovaj akt."
+else
+    git commit -m "feat(e-spis): strojni C23 obradio akt $BROJ_ZAPISA i osvježio prenosivu aplikaciju"
+    git pull --rebase origin main
+    git push origin main
+    echo "================================================================="
+    echo "✅ e-spis_RUKE: C23 OBRADA I GITHUB OBJAVA USPJEŠNO ZAVRŠENA!"
+    echo "   Broj zapisa:         $BROJ_ZAPISA"
+    echo "   Prenosiva app:       Zajednica_RUKE_eSpis.html (Ažurirana)"
+    echo "   Javni pretinac:      https://victorarbor.github.io/njem_ekosustav/"
+    echo "================================================================="
+fi
