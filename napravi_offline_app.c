@@ -9,6 +9,7 @@
 /* Službeni grb Zajednice RUKE (Verifikator i Prijava) */
 /* ==== Tri odvojena vizualna identiteta Zajednice RUKE ==== */
 /* 1. Službeni grb Zajednice RUKE (Verifikator) */
+/* ==== Tri odvojena vizualna identiteta Zajednice RUKE ==== */
 void ispisi_grb_zajednica(FILE *fhtml) {
     fprintf(fhtml, "    <div class=\"logo-header\">\n");
     fprintf(fhtml, "        <img src=\"logo.png\" alt=\"Zajednica RUKE Grb\">\n");
@@ -17,7 +18,6 @@ void ispisi_grb_zajednica(FILE *fhtml) {
     fprintf(fhtml, "    </div>\n");
 }
 
-/* 2. Svečani Orden Zajednice RUKE (Članska Prijava / PIN) */
 void ispisi_grb_orden(FILE *fhtml) {
     fprintf(fhtml, "    <div class=\"logo-header\">\n");
     fprintf(fhtml, "        <img src=\"logo_orden.jpg\" alt=\"Svečani Orden Zajednice RUKE\">\n");
@@ -26,7 +26,6 @@ void ispisi_grb_orden(FILE *fhtml) {
     fprintf(fhtml, "    </div>\n");
 }
 
-/* 3. BST Pečat Tetramorfa (Osobni Pretinac & Forma) */
 void ispisi_grb_bst(FILE *fhtml) {
     fprintf(fhtml, "    <div class=\"logo-header\">\n");
     fprintf(fhtml, "        <img src=\"logo_bst.jpg\" alt=\"BST Hipostazološki Pečat\" style=\"width: 90px; height: 90px; border-radius: 50%%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: cover; display: block; margin: 0 auto; border: 3px solid #f39c12;\">\n");
