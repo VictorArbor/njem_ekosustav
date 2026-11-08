@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifikacija Akata - Zajednica RUKE</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; display: flex; justify-content: center; }
+  .card { background: #1e293b; padding: 2rem; border-radius: 12px; max-width: 600px; width: 100%; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+  h1 { color: #38bdf8; font-size: 1.5rem; border-bottom: 2px solid #334155; padding-bottom: 0.5rem; }
+  input, button { width: 100%; padding: 0.75rem; margin-top: 0.5rem; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; }
+  button { background: #0284c7; font-weight: bold; cursor: pointer; border: none; margin-top: 1rem; }
+  button:hover { background: #0369a1; }
+  .result { margin-top: 1.5rem; padding: 1rem; border-radius: 6px; display: none; background: #0f172a; border: 1px solid #334155; }
+  .valid { border-color: #22c55e; color: #4ade80; }
+  .invalid { border-color: #ef4444; color: #f87171; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Zajednica RUKE &bull; Verifikator Akata</h1>
+  <p style="font-size: 0.85rem; color: #94a3b8;">Matični OIB: 64517735227 | Sustav decentraliziranog verifikacijskog sidra</p>
+  <label>Broj akta:</label>
+<input type="text" id="broj_akta" placeholder="npr. MG/KANGOO-PUNOMOC-2026">
+  <label style="margin-top: 0.5rem; display:block;">Kontrolni broj:</label>
+<input type="text" id="ctrl_code" placeholder="npr. 589F-1771">
+  <button onclick="verificiraj()">VERIFICIRAJ AKT</button>
+  <div id="result" class="result"></div>
+</div>
+<script>
+window.onload = function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('broj') && urlParams.has('kod')) {
+    document.getElementById('broj_akta').value = urlParams.get('broj');
+    document.getElementById('ctrl_code').value = urlParams.get('kod');
+    verificiraj();
+  }
+};
+async function verificiraj() {
+  const br = document.getElementById('broj_akta').value.trim();
+  const ctrl = document.getElementById('ctrl_code').value.trim().toUpperCase();
+  const res = document.getElementById('result');
+  res.style.display = 'block';
+  try {
+    const r = await fetch('registar_akata.json');
+    const data = await r.json();
+    const akt = data.akti.find(a => a.broj_akta === br && a.kontrolni_broj === ctrl);
+    if (akt) {
+      res.className = 'result valid';
+      res.innerHTML = `<strong>✅ AKT JE POTPUNO VALJAN I VERIFICIRAN</strong><br><br>` +
+                      `<b>Broj akta:</b> ${akt.broj_akta}<br>` +
+                      `<b>Kontrolni broj:</b> ${akt.kontrolni_broj}<br>` +
+                      `<b>Vremenska oznaka:</b> ${akt.timestamp}<br>` +
+                      `<b>SHA-256 Otisak:</b> <small>${akt.sha256}</small>`;
+    } else {
+      res.className = 'result invalid';
+      res.innerHTML = '❌ GRESKA: Akt s navedenim brojem i kontrolnim kodom nije pronađen u registru Zajednice RUKE!';
+    }
+  } catch (e) { res.className = 'result invalid'; res.innerHTML = 'Greška pri učitavanju registra.'; }
+}
+</script>
+</body>
+</html>

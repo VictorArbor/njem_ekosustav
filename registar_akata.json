@@ -1,0 +1,49 @@
+{
+  "verzija": "1.0",
+  "izdavatelj": "Zajednica RUKE",
+  "oib": "64517735227",
+  "sjediste": "Delenšice 11, Zagreb",
+  "akti": [
+    {
+      "broj_akta": "MG/KANGOO-ZAHTJEV-2026",
+      "kontrolni_broj": "B9E8-51F5",
+      "sha256": "b9e851f54c557788e529117a83eab80d8234f1bc0eb746c03beaf9d4493ec05e",
+      "datoteka_putanja": "/sdcard/01 Zajednica RUKE/Sluzbeni_Zahtjev_Zajednica_RUKE_Kangoo.pdf",
+      "velicina_bajtova": 270037,
+      "timestamp": "2026-11-06T09:23:11Z",
+      "status": "AKTIVAN"
+    }
+  ,
+    {
+      "broj_akta": "MG/KANGOO-PUNOMOC-2026",
+      "kontrolni_broj": "589F-1771",
+      "sha256": "589f17718f9849ecc358e21dd50b38dc13e9b906c8ea4a5a65237caa17e8c2ce",
+      "datoteka_putanja": "/sdcard/01 Zajednica RUKE/Punomoć registracija Kangoo.pdf",
+      "velicina_bajtova": 784739,
+      "timestamp": "2026-11-06T09:23:11Z",
+      "status": "AKTIVAN"
+    }
+  ,
+    {
+      "broj_akta": "MG/KANGOO-PUNOMOC-2026",
+      "kontrolni_broj": "589F-1771",
+      "sha256": "589f17718f9849ecc358e21dd50b38dc13e9b906c8ea4a5a65237caa17e8c2ce",
+      "datoteka_putanja": "/sdcard/01 Zajednica RUKE/Punomoć registracija Kangoo.pdf",
+      "qr_kod_slika": "QR_MG_KANGOO-PUNOMOC-2026.pbm",
+      "velicina_bajtova": 784739,
+      "timestamp": "2026-11-06T09:29:10Z",
+      "status": "AKTIVAN"
+    }
+  ,
+    {
+      "broj_akta": "MG/PRIGOVOR-HEP-2026",
+      "kontrolni_broj": "E9A2-ECC3",
+      "sha256": "e9a2ecc3e3d7121f4466747d28895852832fe4335cc97ac2bcd6f4220bffe505",
+      "datoteka_putanja": "/data/data/com.termux/files/home/storage/downloads/📄Prigovor HEP MG-HEP-05-11-2026.pdf",
+      "qr_kod_slika": "QR_MG_PRIGOVOR-HEP-2026.pbm",
+      "velicina_bajtova": 209828,
+      "timestamp": "2026-11-08T04:37:52Z",
+      "status": "AKTIVAN"
+    }
+  ]
+}
