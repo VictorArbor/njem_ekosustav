@@ -18,7 +18,7 @@ void ispisi_grb_zajednica(FILE *fhtml) {
 /* Autentični BST pečat hipostazologije i zadružnog poduzetništva */
 void ispisi_grb_bst(FILE *fhtml) {
     fprintf(fhtml, "    <div class=\"logo-header\">\n");
-    fprintf(fhtml, "        <img src=\"logo_bst.png\" alt=\"BST Hipostazološki Pečat\" style=\"width: 90px; height: 90px; border-radius: 50%%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: cover; display: block; margin: 0 auto; border: 3px solid #f39c12;\">\n");
+    fprintf(fhtml, "        <img src=\"logo_bst.jpg\" alt=\"BST Hipostazološki Pečat\" style=\"width: 90px; height: 90px; border-radius: 50%%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: cover; display: block; margin: 0 auto; border: 3px solid #f39c12;\">\n");
     fprintf(fhtml, "        <div style=\"font-size: 16px; font-weight: bold; color: #2c3e50; margin-top: 8px;\">ANUH \xE2\x80\xA2 Hipostazologija &amp; Zadružno Poduzetništvo</div>\n");
     fprintf(fhtml, "        <div style=\"font-size: 11px; color: #7f8c8d;\">Fraktalni Meta-Ontološki Sustav \xE2\x80\xA2 Županja</div>\n");
     fprintf(fhtml, "    </div>\n");
