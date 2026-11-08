@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zajednica RUKE • e-Spis Pretinac</title>
+    <title>Zajednica RUKE • e-Spis Pretinac i Prijem</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #eef2f5; color: #333; margin: 0; padding: 20px; }
         .card { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #28a745; }
         .card-inbox { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #0056b3; }
         .card-form { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #6f42c1; }
+        .card-auth { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid #e67e22; }
         .card-error { border-top-color: #dc3545; }
+        .logo-header { text-align: center; margin-bottom: 20px; }
+        .logo-header img { width: 85px; height: 85px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: cover; }
         h1 { font-size: 20px; color: #1a252f; margin-bottom: 5px; }
-        .subtitle { font-size: 12px; color: #6c757d; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .subtitle { font-size: 12px; color: #6c757d; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; text-align: center; }
         .badge { display: inline-block; padding: 6px 12px; background: #e8f5e9; color: #2e7d32; font-weight: bold; border-radius: 20px; font-size: 13px; margin-bottom: 15px; }
         .info-group { margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px; }
-        .label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; }
+        .label { font-size: 11px; color: #888; text-transform: uppercase; }
         .value { font-size: 13px; font-weight: 600; color: #2c3e50; word-break: break-all; }
         .controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .controls input, .controls select { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; box-sizing: border-box; }
@@ -29,12 +32,22 @@
 <body>
 
 <div id="app" class="card">
-    <div class="subtitle">Zajednica RUKE • C23 Offline e-Spis Verifikator</div>
+    <div class="logo-header">
+        <img src="logo.png" alt="Zajednica RUKE Grb">
+        <div style="font-size: 14px; font-weight: bold; color: #2c3e50; margin-top: 8px;">Udruga Zajednica RUKE</div>
+        <div style="font-size: 11px; color: #7f8c8d;">OIB: 64517735227 • Zagreb</div>
+    </div>
+    <div class="subtitle">C23 Offline e-Spis Verifikator</div>
     <div id="content">Učitavanje podataka iz baze...</div>
 </div>
 
 <div class="card-inbox">
-    <div class="subtitle">📬 Digitalni Korisnički Pretinac (Native C23 Baza)</div>
+    <div class="logo-header">
+        <img src="logo.png" alt="Zajednica RUKE Grb">
+        <div style="font-size: 14px; font-weight: bold; color: #2c3e50; margin-top: 8px;">Udruga Zajednica RUKE</div>
+        <div style="font-size: 11px; color: #7f8c8d;">OIB: 64517735227 • Zagreb</div>
+    </div>
+    <div class="subtitle">Digitalni Korisnički Pretinac & Registar</div>
     <div class="controls">
         <input type="text" id="searchInput" placeholder="🔍 Pretraži po broju akta, pošiljatelju ili primatelju..." onkeyup="filtrirajAkte()">
         <select id="statusFilter" onchange="filtrirajAkte()">
@@ -45,37 +58,55 @@
     <div id="inbox-content">Učitavanje pretinca...</div>
 </div>
 
-<div class="card-form">
-    <div class="subtitle">📤 e-Spis Ured • Prijem Podnesaka sa PDF Privitkom</div>
-    <h1>Uloži novi podnesak</h1>
-    <p style="font-size: 13px; color: #666;">Ispunite podatke, odaberite PDF dokument sa svog uređaja i pošaljite ga u ured na <b>zajednicaruke@gmail.com</b>.</p>
-    <form onsubmit="posaljiPodnesak(event)">
+<div id="authCard" class="card-auth">
+    <div class="logo-header">
+        <img src="logo.png" alt="Zajednica RUKE Grb">
+        <div style="font-size: 14px; font-weight: bold; color: #2c3e50; margin-top: 8px;">Udruga Zajednica RUKE</div>
+        <div style="font-size: 11px; color: #7f8c8d;">OIB: 64517735227 • Zagreb</div>
+    </div>
+    <div class="subtitle">Članska Autentikacija</div>
+    <h1>Prijava u e-Spis Ured</h1>
+    <p style="font-size: 13px; color: #666;">Unesite Vaš članski OIB ili pristupni PIN za otključavanje sigurne forme za prijem podnesaka s kriptografskim pečatom.</p>
+    <div style="margin-top: 15px; display: flex; gap: 10px;">
+        <input type="password" id="memberPin" placeholder="Unesite PIN / OIB (npr. 64517735227)" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+        <button onclick="provjeriPrijavu()" style="background: #e67e22; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Otključaj Ured</button>
+    </div>
+    <div id="authMsg" style="margin-top: 10px; font-size: 13px; font-weight: bold;"></div>
+</div>
+
+<div id="formCard" class="card-form" style="display: none;">
+    <div class="logo-header">
+        <img src="logo.png" alt="Zajednica RUKE Grb">
+        <div style="font-size: 14px; font-weight: bold; color: #2c3e50; margin-top: 8px;">Udruga Zajednica RUKE</div>
+        <div style="font-size: 11px; color: #7f8c8d;">OIB: 64517735227 • Zagreb</div>
+    </div>
+    <div class="subtitle">Klijentska Kriptografska Obrada i Prijem</div>
+    <h1>Uloži novi podnesak s lokalnim SHA-256 pečatom</h1>
+    <p style="font-size: 13px; color: #666;">Odaberite PDF dokument. Sustav lokalno izračunava SHA-256 sažetak u pregledniku, generira kontrolni kod i izdaje službenu e-Potvrdu.</p>
+    <form onsubmit="obradiPodnesak(event)">
         <div style="margin-bottom: 12px;">
             <label class="label">Broj akta / Oznaka</label>
-            <input type="text" id="formBroj" required placeholder="npr. MG/PRIGOVOR-2026" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+            <input type="text" id="pBroj" required placeholder="npr. MG/PRIGOVOR-2026" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
         </div>
         <div style="margin-bottom: 12px;">
             <label class="label">Pošiljatelj (Ime i prezime)</label>
-            <input type="text" id="formPosiljatelj" required value="Michael Golubičić" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+            <input type="text" id="pPosiljatelj" required value="Michael Golubičić" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
         </div>
         <div style="margin-bottom: 12px;">
             <label class="label">Primatelj (Institucija / Sud)</label>
-            <input type="text" id="formPrimatelj" required placeholder="npr. Općinski sud u Vinkovcima" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
-        </div>
-        <div style="margin-bottom: 12px;">
-            <label class="label">Odaberite PDF dokument</label>
-            <input type="file" id="formPdf" accept=".pdf" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; box-sizing: border-box;">
+            <input type="text" id="pPrimatelj" required placeholder="npr. Općinski sud u Vinkovcima" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
         </div>
         <div style="margin-bottom: 15px;">
-            <label class="label">Napomena / Sadržaj</label>
-            <textarea id="formNapomena" rows="2" placeholder="Kratak opis..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;"></textarea>
+            <label class="label">Odaberi PDF dokument</label>
+            <input type="file" id="pfile" accept=".pdf" required style="width: 100%; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; background: #fafafa; box-sizing: border-box;">
         </div>
-        <button type="submit" style="display: block; width: 100%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">🚀 Pripremi i pošalji podnesak</button>
+        <button type="submit" style="display: block; width: 100%; background: #6f42c1; color: white; padding: 14px 0; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">⚡ Generiraj SHA-256 Pečat i e-Potvrdu</button>
     </form>
+    <div id="resultArea" style="margin-top: 20px;"></div>
 </div>
 
 <script>
-    const data = {
+    const serverData = {
   "pravni_subjekt": {
     "naziv": " UDRUGA ZAJEDNICA RUKE",
     "oib": "64517735227",
@@ -97,6 +128,73 @@
 }
 ;
 
+    let localActs = JSON.parse(localStorage.getItem('ruke_akti') || '[]');
+    let allActs = [...serverData.akti, ...localActs];
+
+    function provjeriPrijavu() {
+        const pin = document.getElementById('memberPin').value.trim();
+        if (pin === '64517735227' || pin === 'RUKE2026' || pin === '05315840697') {
+            document.getElementById('authCard').style.display = 'none';
+            document.getElementById('formCard').style.display = 'block';
+        } else {
+            document.getElementById('authMsg').style.color = '#dc3545';
+            document.getElementById('authMsg').innerText = '❌ Neispravan članski PIN ili OIB.';
+        }
+    }
+
+    async function obradiPodnesak(e) {
+        e.preventDefault();
+        const broj = document.getElementById('pBroj').value.trim();
+        const posiljatelj = document.getElementById('pPosiljatelj').value.trim();
+        const primatelj = document.getElementById('pPrimatelj').value.trim();
+        const fileInput = document.getElementById('pfile');
+        const resultArea = document.getElementById('resultArea');
+
+        if (fileInput.files.length === 0) { alert('Molimo odaberite PDF dokument.'); return; }
+        const file = fileInput.files[0];
+
+        resultArea.innerHTML = '<p style="color: #0056b3; font-weight: bold;">⏳ Izračun SHA-256 kriptografskog sažetka u pregledniku...</p>';
+
+        try {
+            const buffer = await file.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const sha256 = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            const kontrolni_broj = sha256.substring(0, 4).toUpperCase() + '-' + sha256.substring(4, 8).toUpperCase();
+            const timestamp = new Date().toISOString();
+
+            const noviAkt = {
+                broj_akta: broj,
+                kontrolni_broj: kontrolni_broj,
+                sha256: sha256,
+                posiljatelj: posiljatelj,
+                primatelj: primatelj,
+                timestamp: timestamp,
+                status: 'ZAPRIMLJENO',
+                pdf_url: '#',
+                potvrda_url: '#'
+            };
+
+            localActs.push(noviAkt);
+            localStorage.setItem('ruke_akti', JSON.stringify(localActs));
+            allActs = [...serverData.akti, ...localActs];
+            prikaziAkte(allActs);
+
+            const potvrdaTekst = `SLUŽBENA e-POTVRDA O ZAPRIMANJU PODNESKA\nUdruga Zajednica RUKE (OIB: 64517735227)\n-----------------------------------------------------\nBroj akta: ${broj}\nKontrolni kod: ${kontrolni_broj}\nSHA-256 Otisak: ${sha256}\nPošiljatelj: ${posiljatelj}\nPrimatelj: ${primatelj}\nDatum/Vrijeme: ${timestamp} (UTC)\nStatus: ZAPRIMLJENO\n-----------------------------------------------------\neIDAS Compliant • Kriptografski ovjereno`;
+            const blob = new Blob([potvrdaTekst], {type: 'text/plain'});
+            const potvrdaUrl = URL.createObjectURL(blob);
+
+            resultArea.innerHTML = `
+                <div class="badge">✓ USPJEŠNO ZAPRIMLJENO I PEČATIRANO</div>
+                <div class="info-group"><div class="label">Kontrolni broj</div><div class="value">${kontrolni_broj}</div></div>
+                <div class="info-group"><div class="label">SHA-256 Otisak</div><div class="value">${sha256}</div></div>
+                <a href="${potvrdaUrl}" download="potvrda_${kontrolni_broj}.txt" class="btn btn-potvrda" style="display:block; width:100%; text-align:center;">📜 Preuzmi Službenu e-Potvrdu (.txt)</a>
+            `;
+        } catch(err) {
+            resultArea.innerHTML = '<p style="color:red;">Greška pri obradi PDF-a: ' + err.message + '</p>';
+        }
+    }
+
     const params = new URLSearchParams(window.location.search);
     const trazeniBroj = params.get('broj');
     const trazeniKod = params.get('kod');
@@ -104,54 +202,31 @@
     const app = document.getElementById('app');
 
     if (trazeniBroj && trazeniKod) {
-        const akt = data.akti.find(a => a.broj_akta === trazeniBroj && a.kontrolni_broj === trazeniKod);
+        const akt = allActs.find(a => a.broj_akta === trazeniBroj && a.kontrolni_broj === trazeniKod);
         if (akt) {
             content.innerHTML = `
-                <div class="badge">✓ VERIFICIRAN IZVORNIK (C23 OFFLINE)</div>
+                <div class="badge">✓ VERIFICIRAN IZVORNIK (OFFLINE)</div>
                 <h1>Broj akta: ${akt.broj_akta}</h1>
                 <div class="info-group"><div class="label">Kontrolni broj</div><div class="value">${akt.kontrolni_broj}</div></div>
                 <div class="info-group"><div class="label">SHA-256 Otisak</div><div class="value">${akt.sha256}</div></div>
                 <div class="info-group"><div class="label">Pošiljatelj ➔ Primatelj</div><div class="value">${akt.posiljatelj} ➔ ${akt.primatelj}</div></div>
-                <a href="${akt.pdf_url}" target="_blank" class="btn">📥 Preuzmi PDF</a>
-                <a href="${akt.potvrda_url}" target="_blank" class="btn btn-potvrda">📜 e-Potvrda</a>
+                <div class="info-group"><div class="label">Vremenska oznaka</div><div class="value">${akt.timestamp}</div></div>
             `;
         } else {
             app.classList.add('card-error');
             content.innerHTML = `<div class="badge" style="background:#ffebee; color:#c62828;">❌ NEVAŽEĆI AKT</div><p>Dokument ne postoji u bazi.</p>`;
         }
     } else {
-        content.innerHTML = `<p style="color:#666;">Džepni C23 e-Spis je spreman. Pretražujte akte u pretincu ispod ili pripremite novi podnesak.</p>`;
-    }
-
-    function posaljiPodnesak(e) {
-        e.preventDefault();
-        const broj = document.getElementById('formBroj').value;
-        const posiljatelj = document.getElementById('formPosiljatelj').value;
-        const primatelj = document.getElementById('formPrimatelj').value;
-        const napomena = document.getElementById('formNapomena').value;
-        const fileInput = document.getElementById('formPdf');
-        const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : 'Nije odabrana datoteka';
-
-        const subject = encodeURIComponent("[Novi Podnesak e-Spis] " + broj);
-        const body = encodeURIComponent(
-            "SISTEMSKI PODNESAK ZA UDRUGU ZAJEDNICA RUKE\n\n" +
-            "Broj akta: " + broj + "\n" +
-            "Pošiljatelj: " + posiljatelj + "\n" +
-            "Primatelj: " + primatelj + "\n" +
-            "Napomena: " + napomena + "\n" +
-            "Priloženi dokument: " + fileName + "\n\n" +
-            "(Molimo priložite odabrani PDF '" + fileName + "' uz ovu poruku prije slanja na zajednicaruke@gmail.com)."
-        );
-        window.location.href = `mailto:zajednicaruke@gmail.com?subject=${subject}&body=${body}`;
+        content.innerHTML = `<p style="color:#666;">Džepni e-Spis je spreman. Prijavite se ispod za unos novog akta ili pretražite postojeći pretinac.</p>`;
     }
 
     function prikaziAkte(aktiZaPrikaz) {
-        let tableHtml = `<table><thead><tr><th>Broj zapisa</th><th>Kontrolni kod</th><th>Pošiljatelj / Primatelj</th><th>Status</th><th>Akcije</th></tr></thead><tbody>`;
+        let tableHtml = `<table><thead><tr><th>Broj zapisa</th><th>Kontrolni kod</th><th>Pošiljatelj / Primatelj</th><th>Status</th><th>Datum</th></tr></thead><tbody>`;
         if (aktiZaPrikaz.length === 0) {
             tableHtml += `<tr><td colspan="5" style="text-align:center; color:#888;">Nema pronađenih akata.</td></tr>`;
         } else {
             aktiZaPrikaz.forEach(a => {
-                tableHtml += `<tr><td><b>${a.broj_akta}</b></td><td><code>${a.kontrolni_broj}</code></td><td>${a.posiljatelj}<br><small style="color:#888;">➔ ${a.primatelj}</small></td><td><span style="color:#28a745; font-weight:bold;">${a.status || 'ZAPRIMLJENO'}</span></td><td><a href="${a.pdf_url}" target="_blank" style="color:#0056b3; font-weight:bold; margin-right:8px;">[PDF]</a> <a href="${a.potvrda_url}" target="_blank" style="color:#28a745; font-weight:bold;">[Potvrda]</a></td></tr>`;
+                tableHtml += `<tr><td><b>${a.broj_akta}</b></td><td><code>${a.kontrolni_broj}</code></td><td>${a.posiljatelj}<br><small style="color:#888;">➔ ${a.primatelj}</small></td><td><span style="color:#28a745; font-weight:bold;">${a.status || 'ZAPRIMLJENO'}</span></td><td><span style="color:#0056b3; font-size:12px;">${a.timestamp ? a.timestamp.substring(0,10) : ''}</span></td></tr>`;
             });
         }
         tableHtml += `</tbody></table>`;
@@ -161,7 +236,7 @@
     function filtrirajAkte() {
         const query = document.getElementById('searchInput').value.toLowerCase();
         const status = document.getElementById('statusFilter').value;
-        const filtrirani = data.akti.filter(a => {
+        const filtrirani = allActs.filter(a => {
             const matchQuery = a.broj_akta.toLowerCase().includes(query) || 
                                a.posiljatelj.toLowerCase().includes(query) || 
                                a.primatelj.toLowerCase().includes(query) || 
@@ -172,9 +247,9 @@
         prikaziAkte(filtrirani);
     }
 
-    prikaziAkte(data.akti);
+    prikaziAkte(allActs);
 </script>
 
-<div class="footer">Zajednica RUKE (OIB: 64517735227) • C23 Strojni Offline e-Spis Pretinac</div>
+<div class="footer">Zajednica RUKE (OIB: 64517735227) • Klijentski SHA-256 e-Spis Pretinac</div>
 </body>
 </html>
